@@ -33,6 +33,22 @@ Uncomment `default = [ "backtrace" ]` in `crates/stdx/Cargo.toml`.
     );
 }
 
+pub fn to_pascal_case(s: &str) -> String {
+    let mut buf = String::with_capacity(s.len());
+    let mut prev_is_underscore = true;
+    for c in s.chars() {
+        if c == '_' {
+            prev_is_underscore = true;
+        } else if prev_is_underscore {
+            buf.push(c.to_ascii_uppercase());
+            prev_is_underscore = false;
+        } else {
+            buf.push(c.to_ascii_lowercase());
+        }
+    }
+    buf
+}
+
 pub fn to_lower_snake_case(s: &str) -> String {
     to_snake_case(s, char::to_ascii_lowercase)
 }

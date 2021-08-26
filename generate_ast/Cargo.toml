@@ -10,3 +10,5 @@ xshell = "0.1.14"
 proc-macro2 = "1.0.28"
 quote = "1.0.9"
 ungrammar = "1.14.4"
+
+stdx = { path = "../stdx" }

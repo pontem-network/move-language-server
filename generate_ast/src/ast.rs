@@ -3,23 +3,19 @@
 //! Specifically, it generates the `SyntaxKind` enum and a number of newtype
 //! wrappers around `SyntaxNode` which implement `syntax::AstNode`.
 
-use std::path::{Path, PathBuf};
 use std::{
     collections::{BTreeSet, HashSet},
     fmt::Write,
-    fs,
 };
 
-use proc_macro2::{Punct, Spacing};
 use quote::{format_ident, quote};
 use ungrammar::{Grammar, Rule};
-use xshell::cmd;
-use xshell::pushenv;
 
-use crate::syntax_kind::{generate_syntax_kinds, SymbolKindsSrc, KINDS_SRC};
+use stdx::{to_lower_snake_case, to_pascal_case, to_upper_snake_case};
+
+use crate::syntax_kind::{KINDS_SRC, SymbolKindsSrc};
 use crate::utils::{
-    cargo_project_root, ensure_file_contents, pluralize, reformat, to_lower_snake_case,
-    to_pascal_case, to_upper_snake_case,
+    pluralize, reformat,
 };
 
 #[derive(Default, Debug)]

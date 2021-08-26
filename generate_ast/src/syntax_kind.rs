@@ -1,7 +1,8 @@
 use proc_macro2::{Punct, Spacing};
 use quote::{format_ident, quote};
 
-use crate::utils::{reformat, to_upper_snake_case};
+use crate::utils::reformat;
+use stdx::to_upper_snake_case;
 
 pub(crate) struct SymbolKindsSrc<'a> {
     pub(crate) punct: &'a [(&'a str, &'a str)],
