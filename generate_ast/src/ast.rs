@@ -13,10 +13,8 @@ use ungrammar::{Grammar, Rule};
 
 use stdx::{to_lower_snake_case, to_pascal_case, to_upper_snake_case};
 
-use crate::syntax_kind::{KINDS_SRC, SymbolKindsSrc};
-use crate::utils::{
-    pluralize, reformat,
-};
+use crate::syntax_kind::{SymbolKindsSrc, KINDS_SRC};
+use crate::utils::{pluralize, reformat};
 
 #[derive(Default, Debug)]
 pub(crate) struct GrammarAST {
@@ -322,42 +320,10 @@ impl GrammarNodeField {
             GrammarNodeField::Token(name) => {
                 for (token_symbol, token_name) in KINDS_SRC.punct {
                     if name.as_str() == *token_symbol {
-                        return format_ident!("{}_token", token_name);
+                        return format_ident!("{}_token", token_name.to_ascii_lowercase());
                     }
                 }
                 format_ident!("{}_token", name)
-                //
-                // let name = match name.as_str() {
-                //     ";" => "semicolon",
-                //     "->" => "thin_arrow",
-                //     "'{'" => "l_curly",
-                //     "'}'" => "r_curly",
-                //     "'('" => "l_paren",
-                //     "')'" => "r_paren",
-                //     "'['" => "l_brack",
-                //     "']'" => "r_brack",
-                //     "<" => "l_angle",
-                //     ">" => "r_angle",
-                //     "=" => "eq",
-                //     "!" => "excl",
-                //     "*" => "star",
-                //     "&" => "amp",
-                //     "_" => "underscore",
-                //     "." => "dot",
-                //     ".." => "dotdot",
-                //     "..." => "dotdotdot",
-                //     "..=" => "dotdoteq",
-                //     "=>" => "fat_arrow",
-                //     "@" => "at",
-                //     ":" => "colon",
-                //     "::" => "coloncolon",
-                //     "#" => "pound",
-                //     "?" => "question_mark",
-                //     "," => "comma",
-                //     "|" => "pipe",
-                //     _ => name,
-                // };
-                // format_ident!("{}_token", name)
             }
             GrammarNodeField::Node { name, .. } => {
                 if name == "type" {

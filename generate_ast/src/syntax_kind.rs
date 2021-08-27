@@ -58,7 +58,15 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
         "move", "copy", "while", "if", "else", "break", "continue",
     ],
     literals: &["INTEGER_NUMBER", "BYTE_STRING", "HEX_STRING"],
-    nodes: &["SOURCE_FILE", "EXPR", "LITERAL", "BIN_EXPR"],
+    nodes: &[
+        "SOURCE_FILE",
+        "EXPR",
+        "LITERAL",
+        "BIN_EXPR",
+        "PREFIX_EXPR",
+        "PATH_EXPR",
+        "PAREN_EXPR",
+    ],
     tokens: &["ERROR", "IDENT", "WHITESPACE", "COMMENT"],
 };
 
@@ -182,7 +190,6 @@ pub(crate) fn generate_syntax_kinds(grammar: SymbolKindsSrc<'_>) -> String {
         macro_rules! T {
             #([#punctuation_values] => { $crate::SyntaxKind::#punctuation };)*
             #([#all_keywords_idents] => { $crate::SyntaxKind::#all_keywords };)*
-            [lifetime_ident] => { $crate::SyntaxKind::LIFETIME_IDENT };
             [ident] => { $crate::SyntaxKind::IDENT };
             [shebang] => { $crate::SyntaxKind::SHEBANG };
         }

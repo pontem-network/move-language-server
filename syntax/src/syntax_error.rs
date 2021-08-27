@@ -1,7 +1,7 @@
 //! See docs for `SyntaxError`.
 
-use std::fmt;
 use rowan::{TextRange, TextSize};
+use std::fmt;
 
 /// Represents the result of unsuccessful tokenization, parsing
 /// or tree validation.

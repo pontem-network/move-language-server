@@ -1,7 +1,7 @@
-use rowan::{Language, GreenNodeBuilder, GreenNode, TextSize};
-use parser::SyntaxKind;
 use crate::syntax_error::SyntaxError;
 use crate::Parse;
+use parser::SyntaxKind;
+use rowan::{GreenNode, GreenNodeBuilder, Language, TextSize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum MoveLanguage {}
@@ -59,6 +59,7 @@ impl SyntaxTreeBuilder {
     }
 
     pub fn error(&mut self, error: parser::ParseError, text_pos: TextSize) {
-        self.errors.push(SyntaxError::new_at_offset(*error.0, text_pos))
+        self.errors
+            .push(SyntaxError::new_at_offset(*error.0, text_pos))
     }
 }

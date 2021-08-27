@@ -19,7 +19,7 @@ use crate::{
 /// They are converted to a tree-structure in
 /// a separate pass, via `TreeBuilder`.
 #[derive(Debug)]
-pub(crate) enum Event {
+pub enum Event {
     /// This event signifies the start of the node.
     /// It should be either abandoned (in which case the
     /// `kind` is `TOMBSTONE`, and the event is ignored),
@@ -91,7 +91,7 @@ impl Event {
 }
 
 /// Generate the syntax tree with the control of events.
-pub(super) fn process(sink: &mut dyn TreeSink, mut events: Vec<Event>) {
+pub fn process(sink: &mut dyn TreeSink, mut events: Vec<Event>) {
     let mut forward_parents = Vec::new();
 
     for i in 0..events.len() {

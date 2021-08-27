@@ -1,8 +1,8 @@
 #![allow(unused)]
 
 use crate::syntax_node::{SyntaxNode, SyntaxNodeChildren, SyntaxToken};
-use std::marker::PhantomData;
 use parser::SyntaxKind;
+use std::marker::PhantomData;
 
 mod nodes;
 mod tokens;

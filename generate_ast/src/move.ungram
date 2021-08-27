@@ -23,6 +23,9 @@ Expr =
     BinExpr
     | Literal
 
+PrefixExpr =
+    ('!' | '*' | '-') Expr
+
 Literal =
     'integer_number' | 'hex_string' | 'byte_string' | 'true' | 'false'
 

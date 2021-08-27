@@ -25,17 +25,36 @@ pub struct Lexer<'t> {
     cur_start: usize,
     cur_end: usize,
     token: Token,
+    pub all_tokens: Vec<Token>,
 }
 
-impl<'i> Lexer<'i> {
-    pub fn new(text: &'i str) -> Lexer<'i> {
-        Lexer {
+impl<'t> Lexer<'t> {
+    pub(crate) fn lookahead_nth(&self, n: usize) -> Token {
+        if n == 0 {
+            self.current()
+        } else if n == 1 {
+            self.lookahead()
+        } else if n == 2 {
+            self.lookahead_2().1
+        } else {
+            todo!()
+        }
+    }
+}
+
+impl<'t> Lexer<'t> {
+    pub fn new(text: &'t str) -> Lexer<'t> {
+        let (kind, len) = find_token(text);
+        let token = Token::new(kind, len);
+        let lexer = Lexer {
             text,
             prev_end: 0,
             cur_start: 0,
-            cur_end: 0,
-            token: Token::new(EOF, 0),
-        }
+            cur_end: len,
+            token,
+            all_tokens: vec![token],
+        };
+        lexer
     }
 
     pub fn current(&self) -> Token {
@@ -66,35 +85,37 @@ impl<'i> Lexer<'i> {
         self.token
     }
 
-    pub fn content(&self) -> &str {
-        &self.text[self.cur_start..self.cur_end]
-    }
+    // pub fn content(&self) -> &str {
+    //     &self.text[self.cur_start..self.cur_end]
+    // }
 
-    pub fn start_loc(&self) -> usize {
-        self.cur_start
-    }
+    // pub fn start_loc(&self) -> usize {
+    //     self.cur_start
+    // }
 
-    pub fn previous_end_loc(&self) -> usize {
-        self.prev_end
-    }
+    // pub fn previous_end_loc(&self) -> usize {
+    //     self.prev_end
+    // }
 
     // Look ahead to the next token after the current one and return it without advancing
     // the state of the lexer.
-    pub fn lookahead(&self) -> SyntaxKind {
+    pub fn lookahead(&self) -> Token {
         let text = self.text[self.cur_end..].trim_start();
         // let offset = self.text.len() - text.len();
-        let (tok, _) = find_token(text);
-        tok
-        // Ok()
+        let (tok, len) = find_token(text);
+        Token::new(tok, len)
     }
 
     // Look ahead to the next two tokens after the current one and return them without advancing
     // the state of the lexer.
     pub fn lookahead_2(&self) -> (Token, Token) {
-        let text = self.text[self.cur_end..].trim_start();
+        let text = &self.text[self.cur_end..];
+        // let text = self.text[self.cur_end..].trim_start();
         let offset = self.text.len() - text.len();
         let (first, length) = find_token(text);
-        let text2 = self.text[offset + length..].trim_start();
+
+        let text2 = &self.text[offset + length..];
+        // let text2 = self.text[offset + length..].trim_start();
         // let offset2 = self.text.len() - text2.len();
         let (second, sec_length) = find_token(text2);
         (Token::new(first, length), Token::new(second, sec_length))
@@ -102,24 +123,40 @@ impl<'i> Lexer<'i> {
 
     pub fn bump(&mut self) {
         self.prev_end = self.cur_end;
-        let text = self.text[self.cur_end..].trim_start();
+        let text = &self.text[self.cur_end..];
+        // let text = self.text[self.cur_end..].trim_start();
         self.cur_start = self.text.len() - text.len();
         let (kind, len) = find_token(text);
+        if kind.is_trivia() {
+            self.advance_with_token(kind, len);
+            self.bump();
+            return;
+        }
+        self.advance_with_token(kind, len);
+        // self.cur_end = self.cur_start + len;
+        // let token = Token::new(kind, len);
+        // self.all_tokens.push(token.clone());
+        // self.token = token
+    }
+
+    fn advance_with_token(&mut self, kind: SyntaxKind, len: usize) {
+        let token = Token::new(kind, len);
         self.cur_end = self.cur_start + len;
-        self.token = Token::new(kind, len);
+        self.all_tokens.push(token);
+        self.token = token;
     }
 
     // Replace the current token. The lexer will always match the longest token,
     // but sometimes the parser will prefer to replace it with a shorter one,
     // e.g., ">" instead of ">>".
-    pub fn replace_token(&mut self, kind: SyntaxKind, len: usize) {
-        self.token = Token::new(kind, len);
-        self.cur_end = self.cur_start + len
-    }
+    // pub fn replace_token(&mut self, kind: SyntaxKind, len: usize) {
+    //     self.token = Token::new(kind, len);
+    //     self.cur_end = self.cur_start + len
+    // }
 }
 
 // Find the next token and its length without changing the state of the lexer.
-fn find_token(text: &str) -> (SyntaxKind, usize) {
+pub fn find_token(text: &str) -> (SyntaxKind, usize) {
     let c: char = match text.chars().next() {
         Some(next_char) => next_char,
         None => {
@@ -127,6 +164,16 @@ fn find_token(text: &str) -> (SyntaxKind, usize) {
         }
     };
     let (tok, len) = match c {
+        ' ' | '\n' | '\t' => {
+            let mut num_space_chars = 1;
+            loop {
+                if !text[num_space_chars..].starts_with("\n\t ") {
+                    break;
+                }
+                num_space_chars += 1;
+            }
+            (WHITESPACE, num_space_chars)
+        }
         '0'..='9' => {
             if text.starts_with("0x") && text.len() > 2 {
                 let (tok, hex_len) = get_hex_number(&text[2..]);
