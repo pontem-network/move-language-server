@@ -6,6 +6,12 @@ use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
 use crate::{TokenSet, T};
 
+pub(crate) enum StmtWithSemi {
+    Yes,
+    No,
+    Optional,
+}
+
 pub(super) fn expr(p: &mut Parser) -> Option<CompletedMarker> {
     expr_bp(p, 1)
 }
@@ -47,6 +53,25 @@ fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
     // parse the interior of the unary expression
     expr_bp(p, 255);
     Some(m.complete(p, kind))
+}
+
+pub(crate) fn stmt(p: &mut Parser, with_semi: StmtWithSemi) {
+    let m = p.start();
+    if p.at(T![let]) {
+        todo!();
+    }
+    expr(p);
+    match with_semi {
+        StmtWithSemi::Yes => {p.expect(T![;]);},
+        StmtWithSemi::No => {},
+        StmtWithSemi::Optional => {
+            if p.at(T![;]) {
+                p.eat(T![;]);
+            }
+        }
+    };
+    m.complete(p, EXPR_STMT);
+    // p.eat(T![;]);
 }
 
 /// Binding powers of operators for a Pratt parser.

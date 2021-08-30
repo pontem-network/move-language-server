@@ -66,6 +66,7 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
         "PREFIX_EXPR",
         "PATH_EXPR",
         "PAREN_EXPR",
+        "EXPR_STMT"
     ],
     tokens: &["ERROR", "IDENT", "WHITESPACE", "COMMENT"],
 };

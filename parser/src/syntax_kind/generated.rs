@@ -76,6 +76,7 @@ pub enum SyntaxKind {
     PREFIX_EXPR,
     PATH_EXPR,
     PAREN_EXPR,
+    EXPR_STMT,
     #[doc(hidden)]
     __LAST,
 }

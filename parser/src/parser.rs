@@ -54,17 +54,17 @@ impl<'t> Parser<'t> {
         // self.nth(0)
     }
 
-    // /// Lookahead operation: returns the kind of the next nth
-    // /// token.
-    // pub(crate) fn nth(&self, n: usize) -> SyntaxKind {
-    //     assert!(n <= 3);
-    //
-    //     let steps = self.steps.get();
-    //     assert!(steps <= 10_000_000, "the parser seems stuck");
-    //     self.steps.set(steps + 1);
-    //
-    //     self.lexer.lookahead_nth(n).kind
-    // }
+    /// Lookahead operation: returns the kind of the next nth
+    /// token.
+    pub(crate) fn nth(&self, n: usize) -> SyntaxKind {
+        assert!(n <= 3);
+
+        let steps = self.steps.get();
+        assert!(steps <= 10_000, "the parser seems stuck");
+        self.steps.set(steps + 1);
+
+        self.lexer.lookahead_nth(n).kind
+    }
 
     /// Checks if the current token is `kind`.
     pub(crate) fn at(&self, kind: SyntaxKind) -> bool {
@@ -98,7 +98,7 @@ impl<'t> Parser<'t> {
             // T![..=] => self.at_composite3(n, T![.], T![.], T![=]),
             // T![<<=] => self.at_composite3(n, T![<], T![<], T![=]),
             // T![>>=] => self.at_composite3(n, T![>], T![>], T![=]),
-            _ => self.lexer.lookahead_nth(n).kind == kind,
+            _ => self.nth(n) == kind,
         }
     }
 

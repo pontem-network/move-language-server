@@ -14,9 +14,7 @@ impl std::fmt::Display for Whitespace {
     }
 }
 impl AstToken for Whitespace {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == WHITESPACE
-    }
+    fn can_cast(kind: SyntaxKind) -> bool { kind == WHITESPACE }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24,9 +22,7 @@ impl AstToken for Whitespace {
             None
         }
     }
-    fn syntax(&self) -> &SyntaxToken {
-        &self.syntax
-    }
+    fn syntax(&self) -> &SyntaxToken { &self.syntax }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -39,9 +35,7 @@ impl std::fmt::Display for Comment {
     }
 }
 impl AstToken for Comment {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == COMMENT
-    }
+    fn can_cast(kind: SyntaxKind) -> bool { kind == COMMENT }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -49,9 +43,7 @@ impl AstToken for Comment {
             None
         }
     }
-    fn syntax(&self) -> &SyntaxToken {
-        &self.syntax
-    }
+    fn syntax(&self) -> &SyntaxToken { &self.syntax }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -64,9 +56,7 @@ impl std::fmt::Display for HexString {
     }
 }
 impl AstToken for HexString {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == HEX_STRING
-    }
+    fn can_cast(kind: SyntaxKind) -> bool { kind == HEX_STRING }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -74,9 +64,7 @@ impl AstToken for HexString {
             None
         }
     }
-    fn syntax(&self) -> &SyntaxToken {
-        &self.syntax
-    }
+    fn syntax(&self) -> &SyntaxToken { &self.syntax }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -89,9 +77,7 @@ impl std::fmt::Display for ByteString {
     }
 }
 impl AstToken for ByteString {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == BYTE_STRING
-    }
+    fn can_cast(kind: SyntaxKind) -> bool { kind == BYTE_STRING }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -99,9 +85,7 @@ impl AstToken for ByteString {
             None
         }
     }
-    fn syntax(&self) -> &SyntaxToken {
-        &self.syntax
-    }
+    fn syntax(&self) -> &SyntaxToken { &self.syntax }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -114,9 +98,7 @@ impl std::fmt::Display for IntegerNumber {
     }
 }
 impl AstToken for IntegerNumber {
-    fn can_cast(kind: SyntaxKind) -> bool {
-        kind == INTEGER_NUMBER
-    }
+    fn can_cast(kind: SyntaxKind) -> bool { kind == INTEGER_NUMBER }
     fn cast(syntax: SyntaxToken) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -124,7 +106,5 @@ impl AstToken for IntegerNumber {
             None
         }
     }
-    fn syntax(&self) -> &SyntaxToken {
-        &self.syntax
-    }
+    fn syntax(&self) -> &SyntaxToken { &self.syntax }
 }

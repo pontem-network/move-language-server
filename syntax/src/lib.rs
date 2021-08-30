@@ -153,7 +153,7 @@ mod tests {
 
     #[test]
     fn test_parse_simple_addition() {
-        let (tree, errors) = parse_text("(1 + ) + (1 + ) + 1");
+        let (tree, errors) = parse_text("(1 + ) + (1 + ) + 1; 1 + 1;");
         let root = SyntaxNode::new_root(tree);
         dbg!(&root);
     }
