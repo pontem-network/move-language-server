@@ -150,11 +150,29 @@ impl SourceFile {
 mod tests {
     use super::*;
     use crate::parsing::parse_text;
+    use crate::syntax_node::MoveLanguage;
+
+    fn parse_root(text: &str) -> SyntaxNode {
+        let (tree, errors) = parse_text(text);
+        let root = SyntaxNode::new_root(tree);
+        root
+    }
 
     #[test]
     fn test_parse_simple_addition() {
-        let (tree, errors) = parse_text("(1 + ) + (1 + ) + 1; 1 + 1;");
-        let root = SyntaxNode::new_root(tree);
-        dbg!(&root);
+        let syntax_root = parse_root("(1 + ) + (1 + ) + 1; 1 + 1;");
+        dbg!(&syntax_root);
+    }
+
+    #[test]
+    fn test_parse_statements() {
+        let syntax_root = parse_root("{1}; {1+1};");
+        dbg!(&syntax_root);
+    }
+
+    #[test]
+    fn test_parse_function() {
+        let syntax_root = parse_root("module M { fun main() { 1 }}");
+        dbg!(&syntax_root);
     }
 }

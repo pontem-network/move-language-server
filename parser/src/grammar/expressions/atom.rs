@@ -1,5 +1,6 @@
 #![allow(unused)]
 
+use crate::grammar::block_expr_unchecked;
 use super::*;
 
 // test expr_literals
@@ -70,6 +71,7 @@ pub(super) fn atom_expr(p: &mut Parser) -> Option<CompletedMarker> {
     }
     let done = match p.current() {
         T!['('] => paren_expr(p),
+        T!['{'] => block_expr_unchecked(p),
         _ => {
             let done =
                 p.error_and_skip_until("expected expression", TokenSet::new(&[T![;], T![')']]));
