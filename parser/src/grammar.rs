@@ -9,7 +9,7 @@ use crate::grammar::items::{item, module, script};
 use crate::marker::CompletedMarker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::{TokenSet, T};
+use crate::TokenSet;
 
 pub(crate) fn block_expr(p: &mut Parser) {
     if !p.at(T!['{']) {

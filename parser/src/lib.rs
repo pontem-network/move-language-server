@@ -8,6 +8,7 @@ pub use token_set::TokenSet;
 #[macro_use]
 mod token_set;
 #[macro_use]
+#[rustfmt::skip]
 pub mod syntax_kind;
 
 pub mod event;

@@ -5,7 +5,7 @@ use crate::grammar::{name, name_ref, types};
 use crate::marker::{CompletedMarker, Marker};
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::{TokenSet, T};
+use crate::TokenSet;
 
 pub(crate) enum StmtWithSemi {
     Yes,

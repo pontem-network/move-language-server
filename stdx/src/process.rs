@@ -16,10 +16,7 @@ pub fn streaming_output(
     let mut stdout = Vec::new();
     let mut stderr = Vec::new();
 
-    let cmd = cmd
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .stdin(Stdio::null());
+    let cmd = cmd.stdout(Stdio::piped()).stderr(Stdio::piped()).stdin(Stdio::null());
 
     let status = {
         let mut child = cmd.spawn()?;
@@ -55,11 +52,7 @@ pub fn streaming_output(
         child.wait()?
     };
 
-    Ok(Output {
-        status,
-        stdout,
-        stderr,
-    })
+    Ok(Output { status, stdout, stderr })
 }
 
 #[cfg(unix)]

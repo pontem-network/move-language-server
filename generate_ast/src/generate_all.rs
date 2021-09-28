@@ -14,6 +14,7 @@ fn generate_ast() {
     let grammar_ast = lower(&grammar);
 
     let syntax_kinds_file = project_root().join("parser/src/syntax_kind/generated.rs");
+    // dbg!(&syntax_kinds_file);
     let syntax_kinds = generate_syntax_kinds(KINDS_SRC);
     ensure_file_contents(syntax_kinds_file.as_path(), &syntax_kinds);
 

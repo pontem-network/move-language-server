@@ -17,10 +17,7 @@ pub(crate) fn ensure_rustfmt() {
 pub(crate) fn reformat(text: String) -> String {
     let _e = pushenv("RUSTUP_TOOLCHAIN", "stable");
     ensure_rustfmt();
-    let mut stdout = cmd!("rustfmt --config fn_single_line=true")
-        .stdin(text)
-        .read()
-        .unwrap();
+    let mut stdout = cmd!("rustfmt --config fn_single_line=true").stdin(text).read().unwrap();
     if !stdout.ends_with('\n') {
         stdout.push('\n');
     }

@@ -18,7 +18,7 @@ mod tests;
 
 use crate::ast::{AstNode, SourceFile};
 use crate::syntax_node::SyntaxNode;
-pub use parser::{SyntaxKind, T};
+pub use parser::SyntaxKind;
 
 /// `Parse` is the result of the parsing: a syntax tree and a collection of
 /// errors.
@@ -34,21 +34,13 @@ pub struct Parse<T> {
 
 impl<T> Clone for Parse<T> {
     fn clone(&self) -> Parse<T> {
-        Parse {
-            green: self.green.clone(),
-            errors: self.errors.clone(),
-            _ty: PhantomData,
-        }
+        Parse { green: self.green.clone(), errors: self.errors.clone(), _ty: PhantomData }
     }
 }
 
 impl<T> Parse<T> {
     fn new(green: GreenNode, errors: Vec<SyntaxError>) -> Parse<T> {
-        Parse {
-            green,
-            errors: Arc::new(errors),
-            _ty: PhantomData,
-        }
+        Parse { green, errors: Arc::new(errors), _ty: PhantomData }
     }
 
     pub fn syntax_node(&self) -> SyntaxNode {
@@ -58,11 +50,7 @@ impl<T> Parse<T> {
 
 impl<T: AstNode> Parse<T> {
     pub fn to_syntax(self) -> Parse<SyntaxNode> {
-        Parse {
-            green: self.green,
-            errors: self.errors,
-            _ty: PhantomData,
-        }
+        Parse { green: self.green, errors: self.errors, _ty: PhantomData }
     }
 
     pub fn tree(&self) -> T {
@@ -85,11 +73,7 @@ impl<T: AstNode> Parse<T> {
 impl Parse<SyntaxNode> {
     pub fn cast<N: AstNode>(self) -> Option<Parse<N>> {
         if N::cast(self.syntax_node()).is_some() {
-            Some(Parse {
-                green: self.green,
-                errors: self.errors,
-                _ty: PhantomData,
-            })
+            Some(Parse { green: self.green, errors: self.errors, _ty: PhantomData })
         } else {
             None
         }
@@ -139,47 +123,6 @@ impl SourceFile {
         // errors.extend(validation::validate(&root));
 
         assert_eq!(root.kind(), SyntaxKind::SOURCE_FILE);
-        Parse {
-            green,
-            errors: Arc::new(errors),
-            _ty: PhantomData,
-        }
+        Parse { green, errors: Arc::new(errors), _ty: PhantomData }
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use crate::parsing::parse_text;
-//     use crate::syntax_node::MoveLanguage;
-//
-//     fn parse_root(text: &str) -> (SyntaxNode, Vec<SyntaxError>) {
-//         let (tree, errors) = parse_text(text);
-//         let root = SyntaxNode::new_root(tree);
-//         (root, errors)
-//     }
-//
-//     #[test]
-//     fn test_parse_simple_addition() {
-//         let syntax_root = parse_root("(1 + ) + (1 + ) + 1; 1 + 1;");
-//         dbg!(&syntax_root);
-//     }
-//
-//     #[test]
-//     fn test_parse_statements() {
-//         let syntax_root = parse_root("{1}; {1+1};");
-//         dbg!(&syntax_root);
-//     }
-//
-//     #[test]
-//     fn test_parse_function() {
-//         let (root, errors) = parse_root(r"
-//         script { fun main() {
-//                 {1};
-//             }
-//         }
-//         ");
-//         dbg!(&root);
-//         dbg!(&errors);
-//     }
-// }

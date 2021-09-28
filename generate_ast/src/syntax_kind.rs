@@ -106,16 +106,12 @@ pub(crate) fn generate_syntax_kinds(grammar: SymbolKindsSrc<'_>) -> String {
             quote! { #(#cs)* }
         }
     });
-    let punctuation = grammar
-        .punct
-        .iter()
-        .map(|(_token, name)| format_ident!("{}", name))
-        .collect::<Vec<_>>();
+    let punctuation =
+        grammar.punct.iter().map(|(_token, name)| format_ident!("{}", name)).collect::<Vec<_>>();
 
     let full_keywords_values = &grammar.keywords;
-    let full_keywords = full_keywords_values
-        .iter()
-        .map(|kw| format_ident!("{}_KW", to_upper_snake_case(kw)));
+    let full_keywords =
+        full_keywords_values.iter().map(|kw| format_ident!("{}_KW", to_upper_snake_case(kw)));
 
     let all_keywords_values = grammar.keywords.iter().collect::<Vec<_>>();
     let all_keywords_idents = all_keywords_values.iter().map(|kw| format_ident!("{}", kw));
@@ -124,23 +120,12 @@ pub(crate) fn generate_syntax_kinds(grammar: SymbolKindsSrc<'_>) -> String {
         .map(|name| format_ident!("{}_KW", to_upper_snake_case(name)))
         .collect::<Vec<_>>();
 
-    let literals = grammar
-        .literals
-        .iter()
-        .map(|name| format_ident!("{}", name))
-        .collect::<Vec<_>>();
+    let literals =
+        grammar.literals.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
-    let tokens = grammar
-        .tokens
-        .iter()
-        .map(|name| format_ident!("{}", name))
-        .collect::<Vec<_>>();
+    let tokens = grammar.tokens.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
-    let nodes = grammar
-        .nodes
-        .iter()
-        .map(|name| format_ident!("{}", name))
-        .collect::<Vec<_>>();
+    let nodes = grammar.nodes.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
     let ast = quote! {
         #![allow(bad_style, missing_docs, unreachable_pub)]

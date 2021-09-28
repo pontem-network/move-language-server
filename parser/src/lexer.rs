@@ -12,10 +12,7 @@ pub struct Token {
 
 impl Token {
     pub fn new(kind: SyntaxKind, len: usize) -> Self {
-        Token {
-            kind,
-            len: TextSize::from(len as u32),
-        }
+        Token { kind, len: TextSize::from(len as u32) }
     }
 }
 
@@ -46,14 +43,8 @@ impl<'t> Lexer<'t> {
     pub fn new(text: &'t str) -> Lexer<'t> {
         let (kind, len) = find_token(text);
         let token = Token::new(kind, len);
-        let lexer = Lexer {
-            text,
-            prev_end: 0,
-            cur_start: 0,
-            cur_end: len,
-            token,
-            all_tokens: vec![token],
-        };
+        let lexer =
+            Lexer { text, prev_end: 0, cur_start: 0, cur_end: len, token, all_tokens: vec![token] };
         lexer
     }
 
@@ -324,10 +315,8 @@ fn get_name_len(text: &str) -> usize {
 }
 
 fn get_decimal_number(text: &str) -> (SyntaxKind, usize) {
-    let num_text_len = text
-        .chars()
-        .position(|c| !matches!(c, '0'..='9'))
-        .unwrap_or_else(|| text.len());
+    let num_text_len =
+        text.chars().position(|c| !matches!(c, '0'..='9')).unwrap_or_else(|| text.len());
     get_number_maybe_with_suffix(text, num_text_len)
 }
 

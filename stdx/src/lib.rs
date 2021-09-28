@@ -92,13 +92,15 @@ pub fn trim_indent(mut text: &str) -> String {
         .min()
         .unwrap_or(0);
     text.split_inclusive('\n')
-        .map(|line| {
-            if line.len() <= indent {
-                line.trim_start_matches(' ')
-            } else {
-                &line[indent..]
-            }
-        })
+        .map(
+            |line| {
+                if line.len() <= indent {
+                    line.trim_start_matches(' ')
+                } else {
+                    &line[indent..]
+                }
+            },
+        )
         .collect()
 }
 

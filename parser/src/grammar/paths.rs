@@ -2,7 +2,7 @@ use crate::grammar::{items, name_ref};
 use crate::marker::CompletedMarker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::{TokenSet, T};
+use crate::TokenSet;
 
 pub(super) const PATH_FIRST: TokenSet = TokenSet::new(&[IDENT]);
 // TokenSet::new(&[IDENT, T![self], T![super], T![crate], T![:], T![<]]);

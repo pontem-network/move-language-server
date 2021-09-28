@@ -155,19 +155,14 @@ pub fn extract_tags(mut text: &str, tag: &str) -> (Vec<(TextRange, Option<String
                 if text.starts_with(&open) {
                     let close_open = text.find('>').unwrap();
                     let attr = text[open.len()..close_open].trim();
-                    let attr = if attr.is_empty() {
-                        None
-                    } else {
-                        Some(attr.to_string())
-                    };
+                    let attr = if attr.is_empty() { None } else { Some(attr.to_string()) };
                     text = &text[close_open + '>'.len_utf8()..];
                     let from = TextSize::of(&res);
                     stack.push((from, attr));
                 } else if text.starts_with(&close) {
                     text = &text[close.len()..];
-                    let (from, attr) = stack
-                        .pop()
-                        .unwrap_or_else(|| panic!("unmatched </{}>", tag));
+                    let (from, attr) =
+                        stack.pop().unwrap_or_else(|| panic!("unmatched </{}>", tag));
                     let to = TextSize::of(&res);
                     ranges.push((TextRange::new(from, to), attr));
                 } else {
@@ -184,14 +179,8 @@ pub fn extract_tags(mut text: &str, tag: &str) -> (Vec<(TextRange, Option<String
 #[test]
 fn test_extract_tags() {
     let (tags, text) = extract_tags(r#"<tag fn>fn <tag>main</tag>() {}</tag>"#, "tag");
-    let actual = tags
-        .into_iter()
-        .map(|(range, attr)| (&text[range], attr))
-        .collect::<Vec<_>>();
-    assert_eq!(
-        actual,
-        vec![("fn main() {}", Some("fn".into())), ("main", None),]
-    );
+    let actual = tags.into_iter().map(|(range, attr)| (&text[range], attr)).collect::<Vec<_>>();
+    assert_eq!(actual, vec![("fn main() {}", Some("fn".into())), ("main", None),]);
 }
 
 /// Inserts `$0` marker into the `text` at `offset`.
@@ -238,11 +227,7 @@ pub fn extract_annotations(text: &str) -> Vec<(TextRange, String)> {
             let annotation_offset = TextSize::of(&line[..idx + "//".len()]);
             for annotation in extract_line_annotations(&line[idx + "//".len()..]) {
                 match annotation {
-                    LineAnnotation::Annotation {
-                        mut range,
-                        content,
-                        file,
-                    } => {
+                    LineAnnotation::Annotation { mut range, content, file } => {
                         range += annotation_offset;
                         this_line_annotations.push((range.end(), res.len()));
                         let range = if file {
@@ -254,10 +239,7 @@ pub fn extract_annotations(text: &str) -> Vec<(TextRange, String)> {
                         };
                         res.push((range, content))
                     }
-                    LineAnnotation::Continuation {
-                        mut offset,
-                        content,
-                    } => {
+                    LineAnnotation::Continuation { mut offset, content } => {
                         offset += annotation_offset;
                         let &(_, idx) = prev_line_annotations
                             .iter()
@@ -286,25 +268,14 @@ pub fn extract_annotations(text: &str) -> Vec<(TextRange, String)> {
 }
 
 enum LineAnnotation {
-    Annotation {
-        range: TextRange,
-        content: String,
-        file: bool,
-    },
-    Continuation {
-        offset: TextSize,
-        content: String,
-    },
+    Annotation { range: TextRange, content: String, file: bool },
+    Continuation { offset: TextSize, content: String },
 }
 
 fn extract_line_annotations(mut line: &str) -> Vec<LineAnnotation> {
     let mut res = Vec::new();
     let mut offset: TextSize = 0.into();
-    let marker: fn(char) -> bool = if line.contains('^') {
-        |c| c == '^'
-    } else {
-        |c| c == '|'
-    };
+    let marker: fn(char) -> bool = if line.contains('^') { |c| c == '^' } else { |c| c == '|' };
     while let Some(idx) = line.find(marker) {
         offset += TextSize::try_from(idx).unwrap();
         line = &line[idx..];
@@ -329,16 +300,9 @@ fn extract_line_annotations(mut line: &str) -> Vec<LineAnnotation> {
         let content = content.trim().to_string();
 
         let annotation = if continuation {
-            LineAnnotation::Continuation {
-                offset: range.end(),
-                content,
-            }
+            LineAnnotation::Continuation { offset: range.end(), content }
         } else {
-            LineAnnotation::Annotation {
-                range,
-                content,
-                file,
-            }
+            LineAnnotation::Annotation { range, content, file }
         };
         res.push(annotation);
 
@@ -370,11 +334,7 @@ fn main() {
 
     assert_eq!(
         res[..3],
-        [
-            ("x", "def".into()),
-            ("y", "def".into()),
-            ("zoo", "type:\ni32\n".into())
-        ]
+        [("x", "def".into()), ("y", "def".into()), ("zoo", "type:\ni32\n".into())]
     );
     assert_eq!(res[3].0.len(), 115);
 }
@@ -395,14 +355,7 @@ fn main() {
         .map(|(range, ann)| (&text[range], ann))
         .collect::<Vec<_>>();
 
-    assert_eq!(
-        res,
-        [
-            ("x", "a".into()),
-            ("y", "b".into()),
-            ("(x,   y)", "c".into())
-        ]
-    );
+    assert_eq!(res, [("x", "a".into()), ("y", "b".into()), ("(x,   y)", "c".into())]);
 }
 
 /// Returns `false` if slow tests should not run, otherwise returns `true` and

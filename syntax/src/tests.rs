@@ -26,11 +26,7 @@ fn test_data_dir() -> PathBuf {
 }
 
 fn assert_errors_are_present(errors: &[SyntaxError], path: &Path) {
-    assert!(
-        !errors.is_empty(),
-        "There should be errors in the file {:?}",
-        path.display()
-    );
+    assert!(!errors.is_empty(), "There should be errors in the file {:?}", path.display());
 }
 fn assert_errors_are_absent(errors: &[SyntaxError], path: &Path) {
     assert_eq!(

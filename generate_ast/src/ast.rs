@@ -34,11 +34,7 @@ pub(crate) struct GrammarNode {
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum GrammarNodeField {
     Token(String),
-    Node {
-        name: String,
-        ty: String,
-        cardinality: Cardinality,
-    },
+    Node { name: String, ty: String, cardinality: Cardinality },
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -81,6 +77,7 @@ pub(crate) fn generate_tokens(grammar: &GrammarAST) -> String {
     reformat(
         quote! {
             use crate::{SyntaxKind::{self, *}, syntax_node::SyntaxToken, ast::AstToken};
+            use parser::T;
             #(#tokens)*
         }
         .to_string(),
@@ -157,11 +154,7 @@ pub(crate) fn generate_nodes(kinds: SymbolKindsSrc<'_>, grammar: &GrammarAST) ->
         .enums
         .iter()
         .map(|en| {
-            let variants: Vec<_> = en
-                .variants
-                .iter()
-                .map(|var| format_ident!("{}", var))
-                .collect();
+            let variants: Vec<_> = en.variants.iter().map(|var| format_ident!("{}", var)).collect();
             let name = format_ident!("{}", en.name);
             let kinds: Vec<_> = variants
                 .iter()
@@ -230,10 +223,8 @@ pub(crate) fn generate_nodes(kinds: SymbolKindsSrc<'_>, grammar: &GrammarAST) ->
     let enum_names = grammar.enums.iter().map(|it| &it.name);
     let node_names = grammar.nodes.iter().map(|it| &it.name);
 
-    let display_impls = enum_names
-        .chain(node_names.clone())
-        .map(|it| format_ident!("{}", it))
-        .map(|name| {
+    let display_impls =
+        enum_names.chain(node_names.clone()).map(|it| format_ident!("{}", it)).map(|name| {
             quote! {
                 impl std::fmt::Display for #name {
                     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -259,8 +250,8 @@ pub(crate) fn generate_nodes(kinds: SymbolKindsSrc<'_>, grammar: &GrammarAST) ->
     let ast = quote! {
         use crate::syntax_node::{SyntaxNode, SyntaxToken};
         use crate::SyntaxKind::{self, *};
-        use crate::T;
         use crate::ast::{self, AstNode, AstChildren, support};
+        use parser::T;
 
         #(#node_defs)*
         #(#enum_defs)*
@@ -273,11 +264,8 @@ pub(crate) fn generate_nodes(kinds: SymbolKindsSrc<'_>, grammar: &GrammarAST) ->
 
     let mut res = String::with_capacity(ast.len() * 2);
 
-    let mut docs = grammar
-        .nodes
-        .iter()
-        .map(|it| &it.doc)
-        .chain(grammar.enums.iter().map(|it| &it.doc));
+    let mut docs =
+        grammar.nodes.iter().map(|it| &it.doc).chain(grammar.enums.iter().map(|it| &it.doc));
 
     for chunk in ast.split("# [pretty_doc_comment_placeholder_workaround] ") {
         res.push_str(chunk);
@@ -298,13 +286,7 @@ fn write_doc_comment(contents: &[String], dest: &mut String) {
 
 impl GrammarNodeField {
     fn is_many(&self) -> bool {
-        matches!(
-            self,
-            GrammarNodeField::Node {
-                cardinality: Cardinality::Many,
-                ..
-            }
-        )
+        matches!(self, GrammarNodeField::Node { cardinality: Cardinality::Many, .. })
     }
     fn token_kind(&self) -> Option<proc_macro2::TokenStream> {
         match self {
@@ -357,23 +339,13 @@ pub(crate) fn lower(grammar: &Grammar) -> GrammarAST {
         let rule = &grammar[node].rule;
         match lower_enum(grammar, rule) {
             Some(variants) => {
-                let enum_src = GrammarEnum {
-                    doc: Vec::new(),
-                    name,
-                    traits: Vec::new(),
-                    variants,
-                };
+                let enum_src = GrammarEnum { doc: Vec::new(), name, traits: Vec::new(), variants };
                 res.enums.push(enum_src);
             }
             None => {
                 let mut fields = Vec::new();
                 lower_rule(&mut fields, grammar, None, rule);
-                res.nodes.push(GrammarNode {
-                    doc: Vec::new(),
-                    name,
-                    traits: Vec::new(),
-                    fields,
-                });
+                res.nodes.push(GrammarNode { doc: Vec::new(), name, traits: Vec::new(), fields });
             }
         }
     }
@@ -415,11 +387,7 @@ fn lower_rule(
         Rule::Node(node) => {
             let ty = grammar[*node].name.clone();
             let name = label.cloned().unwrap_or_else(|| to_lower_snake_case(&ty));
-            let field = GrammarNodeField::Node {
-                name,
-                ty,
-                cardinality: Cardinality::Optional,
-            };
+            let field = GrammarNodeField::Node { name, ty, cardinality: Cardinality::Optional };
             acc.push(field);
         }
         Rule::Token(token) => {
@@ -436,14 +404,8 @@ fn lower_rule(
         Rule::Rep(inner) => {
             if let Rule::Node(node) = &**inner {
                 let ty = grammar[*node].name.clone();
-                let name = label
-                    .cloned()
-                    .unwrap_or_else(|| pluralize(&to_lower_snake_case(&ty)));
-                let field = GrammarNodeField::Node {
-                    name,
-                    ty,
-                    cardinality: Cardinality::Many,
-                };
+                let name = label.cloned().unwrap_or_else(|| pluralize(&to_lower_snake_case(&ty)));
+                let field = GrammarNodeField::Node { name, ty, cardinality: Cardinality::Many };
                 acc.push(field);
                 return;
             }
@@ -503,14 +465,8 @@ fn lower_comma_list(
         _ => return false,
     }
     let ty = grammar[*node].name.clone();
-    let name = label
-        .cloned()
-        .unwrap_or_else(|| pluralize(&to_lower_snake_case(&ty)));
-    let field = GrammarNodeField::Node {
-        name,
-        ty,
-        cardinality: Cardinality::Many,
-    };
+    let name = label.cloned().unwrap_or_else(|| pluralize(&to_lower_snake_case(&ty)));
+    let field = GrammarNodeField::Node { name, ty, cardinality: Cardinality::Many };
     acc.push(field);
     true
 }
@@ -561,10 +517,7 @@ fn extract_struct_traits(ast: &mut GrammarAST) {
         ("AttrsOwner", &["attrs"]),
         ("NameOwner", &["name"]),
         ("VisibilityOwner", &["visibility"]),
-        (
-            "GenericParamsOwner",
-            &["generic_param_list", "where_clause"],
-        ),
+        ("GenericParamsOwner", &["generic_param_list", "where_clause"]),
         ("TypeBoundsOwner", &["type_bound_list", "colon_token"]),
         ("ModuleItemOwner", &["items"]),
         ("LoopBodyOwner", &["label", "loop_body"]),

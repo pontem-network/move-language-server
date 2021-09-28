@@ -11,10 +11,7 @@ pub(crate) struct Marker {
 
 impl Marker {
     pub(crate) fn new(pos: u32) -> Marker {
-        Marker {
-            pos,
-            bomb: DropBomb::new("Marker must be either completed or abandoned"),
-        }
+        Marker { pos, bomb: DropBomb::new("Marker must be either completed or abandoned") }
     }
 
     /// Finishes the syntax tree node and assigns `kind` to it,
@@ -41,10 +38,7 @@ impl Marker {
         let idx = self.pos as usize;
         if idx == p.events.len() - 1 {
             match p.events.pop() {
-                Some(Event::Start {
-                    kind: TOMBSTONE,
-                    forward_parent: None,
-                }) => (),
+                Some(Event::Start { kind: TOMBSTONE, forward_parent: None }) => (),
                 _ => unreachable!(),
             }
         }
@@ -59,11 +53,7 @@ pub(crate) struct CompletedMarker {
 
 impl CompletedMarker {
     fn new(start_pos: u32, finish_pos: u32, kind: SyntaxKind) -> Self {
-        CompletedMarker {
-            start_pos,
-            finish_pos,
-            kind,
-        }
+        CompletedMarker { start_pos, finish_pos, kind }
     }
 
     /// This method allows to create a new node which starts
@@ -96,10 +86,7 @@ impl CompletedMarker {
         let start_idx = self.start_pos as usize;
         let finish_idx = self.finish_pos as usize;
         match &mut p.events[start_idx] {
-            Event::Start {
-                kind,
-                forward_parent: None,
-            } => *kind = TOMBSTONE,
+            Event::Start { kind, forward_parent: None } => *kind = TOMBSTONE,
             _ => unreachable!(),
         }
         match &mut p.events[finish_idx] {

@@ -8,7 +8,7 @@ use crate::{
     event::Event,
     ParseError,
     SyntaxKind::{self, EOF, ERROR},
-    Token, TokenSet, T,
+    Token, TokenSet,
 };
 
 /// `Parser` struct provides the low-level API for
@@ -28,11 +28,7 @@ pub(crate) struct Parser<'t> {
 
 impl<'t> Parser<'t> {
     pub(super) fn new(lexer: &'t mut Lexer<'t>) -> Parser<'t> {
-        Parser {
-            lexer,
-            events: Vec::new(),
-            steps: Cell::new(0),
-        }
+        Parser { lexer, events: Vec::new(), steps: Cell::new(0) }
     }
 
     pub(crate) fn tokens(&mut self) -> Vec<Token> {

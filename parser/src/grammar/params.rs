@@ -2,7 +2,7 @@ use crate::grammar::{name, name_r, types};
 use crate::marker::Marker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::{TokenSet, T};
+use crate::TokenSet;
 
 const PARAM_FIRST: TokenSet = types::TYPE_FIRST;
 

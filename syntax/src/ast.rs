@@ -4,7 +4,9 @@ use crate::syntax_node::{SyntaxNode, SyntaxNodeChildren, SyntaxToken};
 use parser::SyntaxKind;
 use std::marker::PhantomData;
 
+#[rustfmt::skip]
 mod nodes;
+#[rustfmt::skip]
 mod tokens;
 
 pub use nodes::*;
@@ -64,10 +66,7 @@ pub struct AstChildren<N> {
 
 impl<N> AstChildren<N> {
     fn new(parent: &SyntaxNode) -> Self {
-        AstChildren {
-            inner: parent.children(),
-            ph: PhantomData,
-        }
+        AstChildren { inner: parent.children(), ph: PhantomData }
     }
 }
 
@@ -90,9 +89,6 @@ mod support {
     }
 
     pub(super) fn token(parent: &SyntaxNode, kind: SyntaxKind) -> Option<SyntaxToken> {
-        parent
-            .children_with_tokens()
-            .filter_map(|it| it.into_token())
-            .find(|it| it.kind() == kind)
+        parent.children_with_tokens().filter_map(|it| it.into_token()).find(|it| it.kind() == kind)
     }
 }

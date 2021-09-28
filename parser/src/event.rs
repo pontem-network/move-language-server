@@ -83,10 +83,7 @@ pub enum Event {
 
 impl Event {
     pub(crate) fn tombstone() -> Self {
-        Event::Start {
-            kind: TOMBSTONE,
-            forward_parent: None,
-        }
+        Event::Start { kind: TOMBSTONE, forward_parent: None }
     }
 }
 
@@ -96,14 +93,9 @@ pub fn process(sink: &mut dyn TreeSink, mut events: Vec<Event>) {
 
     for i in 0..events.len() {
         match mem::replace(&mut events[i], Event::tombstone()) {
-            Event::Start {
-                kind: TOMBSTONE, ..
-            } => (),
+            Event::Start { kind: TOMBSTONE, .. } => (),
 
-            Event::Start {
-                kind,
-                forward_parent,
-            } => {
+            Event::Start { kind, forward_parent } => {
                 // For events[A, B, C], B is A's forward_parent, C is B's forward_parent,
                 // in the normal control flow, the parent-child relation: `A -> B -> C`,
                 // while with the magic forward_parent, it writes: `C <- B <- A`.
@@ -116,10 +108,7 @@ pub fn process(sink: &mut dyn TreeSink, mut events: Vec<Event>) {
                     idx += fwd as usize;
                     // append `A`'s forward_parent `B`
                     fp = match mem::replace(&mut events[idx], Event::tombstone()) {
-                        Event::Start {
-                            kind,
-                            forward_parent,
-                        } => {
+                        Event::Start { kind, forward_parent } => {
                             if kind != TOMBSTONE {
                                 forward_parents.push(kind);
                             }

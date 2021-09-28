@@ -2,7 +2,7 @@ use crate::grammar::paths;
 use crate::grammar::paths::is_use_path_start;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::{TokenSet, T};
+use crate::TokenSet;
 
 pub(super) const TYPE_FIRST: TokenSet = paths::PATH_FIRST.union(TokenSet::new(&[T![&]]));
 

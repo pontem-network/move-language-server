@@ -4,7 +4,7 @@ use crate::grammar::{block_expr, name, name_r};
 use crate::marker::Marker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::{TokenSet, T};
+use crate::TokenSet;
 
 pub(crate) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
     // T![struct],
