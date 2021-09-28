@@ -25,7 +25,7 @@ pub(crate) fn script(p: &mut Parser) {
     p.bump(T![script]);
 
     if p.at(T!['{']) {
-        script_item_list(p);
+        item_list(p);
     } else if !p.eat(T![;]) {
         p.error("expected `;` or `{`");
     }
@@ -40,45 +40,25 @@ pub(crate) fn module(p: &mut Parser) {
 
     name(p);
     if p.at(T!['{']) {
-        module_item_list(p);
+        item_list(p);
     } else if !p.eat(T![;]) {
         p.error("expected `;` or `{`");
     }
     m.complete(p, MODULE);
 }
 
-pub(crate) fn module_item_list(p: &mut Parser) {
+pub(crate) fn item_list(p: &mut Parser) {
     assert!(p.at(T!['{']));
     let m = p.start();
     p.bump(T!['{']);
     while !(p.at(T!['}']) || p.at(EOF)) {
-        item(p, maybe_module_item);
+        item(p);
     }
     p.expect(T!['}']);
-    m.complete(p, MODULE_ITEM_LIST);
+    m.complete(p, ITEM_LIST);
 }
 
-pub(crate) fn script_item_list(p: &mut Parser) {
-    assert!(p.at(T!['{']));
-    let m = p.start();
-    p.bump(T!['{']);
-    while !(p.at(T!['}']) || p.at(EOF)) {
-        item(p, maybe_script_item);
-    }
-    p.expect(T!['}']);
-    m.complete(p, SCRIPT_ITEM_LIST);
-}
-
-// pub(crate) fn module_contents(p: &mut Parser) {
-//     while !(p.at(T!['}']) || p.at(EOF)) {
-//         item(p);
-//     }
-// }
-
-pub(crate) fn item<F>(p: &mut Parser, maybe_item: F)
-where
-    F: Fn(&mut Parser, Marker) -> Result<(), Marker>,
-{
+pub(crate) fn item(p: &mut Parser) {
     let m = p.start();
     let m = match maybe_item(p, m) {
         Ok(()) => {
@@ -108,22 +88,7 @@ where
 }
 
 /// Try to parse an item, completing `m` in case of success.
-pub(crate) fn maybe_module_item(p: &mut Parser, m: Marker) -> Result<(), Marker> {
-    match p.current() {
-        T![fun] => {
-            fun(p);
-            m.complete(p, FUN);
-        }
-        _ => {
-            p.error("expected an item");
-            m.complete(p, ERROR);
-        }
-    }
-    Ok(())
-}
-
-/// Try to parse an item, completing `m` in case of success.
-pub(crate) fn maybe_script_item(p: &mut Parser, m: Marker) -> Result<(), Marker> {
+pub(crate) fn maybe_item(p: &mut Parser, m: Marker) -> Result<(), Marker> {
     match p.current() {
         T![fun] => {
             fun(p);

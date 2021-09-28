@@ -61,9 +61,8 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
     nodes: &[
         "SOURCE_FILE",
         "MODULE",
-        "MODULE_ITEM_LIST",
         "SCRIPT",
-        "SCRIPT_ITEM_LIST",
+        "ITEM_LIST",
         "NAME_REF",
         "FUN",
         "PARAM_LIST",
