@@ -172,7 +172,7 @@ mod tests {
 
     #[test]
     fn test_parse_function() {
-        let (root, errors) = parse_root("script { fun main(a: u8): u8 { 1 }}");
+        let (root, errors) = parse_root("script { fun main() { let a: u8 = 1 + 1; }}");
         dbg!(&root);
         dbg!(&errors);
     }

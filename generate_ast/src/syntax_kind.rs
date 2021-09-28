@@ -79,6 +79,7 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
         "PATH_EXPR",
         "PAREN_EXPR",
         "EXPR_STMT",
+        "LET_STMT",
         "REF_TYPE",
         "PATH_TYPE",
     ],

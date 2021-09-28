@@ -1,7 +1,8 @@
 mod atom;
 
 use crate::grammar::expressions::atom::{atom_expr, literal};
-use crate::marker::CompletedMarker;
+use crate::grammar::{name, types};
+use crate::marker::{CompletedMarker, Marker};
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
 use crate::{TokenSet, T};
@@ -55,10 +56,47 @@ fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
     Some(m.complete(p, kind))
 }
 
+// test let_stmt
+// fn foo() {
+//     let a;
+//     let b: i32;
+//     let c = 92;
+//     let d: i32 = 92;
+//     let e: !;
+//     let _: ! = {};
+//     let f = #[attr]||{};
+// }
+fn let_stmt(p: &mut Parser, m: Marker, with_semi: StmtWithSemi) {
+    assert!(p.at(T![let]));
+    p.bump(T![let]);
+    name(p);
+
+    if p.at(T![:]) {
+        types::ascription(p);
+    }
+    if p.eat(T![=]) {
+        expr(p);
+    }
+
+    match with_semi {
+        StmtWithSemi::Yes => {
+            p.expect(T![;]);
+        }
+        StmtWithSemi::No => {}
+        StmtWithSemi::Optional => {
+            if p.at(T![;]) {
+                p.eat(T![;]);
+            }
+        }
+    }
+    m.complete(p, LET_STMT);
+}
+
 pub(crate) fn stmt(p: &mut Parser, with_semi: StmtWithSemi) {
     let m = p.start();
     if p.at(T![let]) {
-        todo!();
+        let_stmt(p, m, with_semi);
+        return;
     }
     expr(p);
     match with_semi {
