@@ -1,15 +1,15 @@
 mod expressions;
 mod items;
 mod params;
-mod types;
 mod paths;
+mod types;
 
-use crate::{T, TokenSet};
+use crate::grammar::expressions::{stmt, StmtWithSemi};
+use crate::grammar::items::{item, module, script};
+use crate::marker::CompletedMarker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
-use crate::grammar::expressions::{stmt, StmtWithSemi};
-use crate::grammar::items::{item, module_contents, module_item};
-use crate::marker::CompletedMarker;
+use crate::{TokenSet, T};
 
 pub(crate) fn block_expr(p: &mut Parser) {
     if !p.at(T!['{']) {
@@ -60,6 +60,14 @@ fn name_ref(p: &mut Parser) {
 
 pub(crate) fn root(p: &mut Parser) {
     let m = p.start();
-    module_item(p);
+    while !(p.at(EOF)) {
+        if p.at(T![module]) {
+            module(p);
+        } else if p.at(T![script]) {
+            script(p);
+        } else {
+            p.error("expected module or script");
+        }
+    }
     m.complete(p, SOURCE_FILE);
 }

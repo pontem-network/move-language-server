@@ -1,7 +1,7 @@
 #![allow(unused)]
 
-use crate::grammar::block_expr_unchecked;
 use super::*;
+use crate::grammar::block_expr_unchecked;
 
 // test expr_literals
 // fn foo() {

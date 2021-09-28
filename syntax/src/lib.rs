@@ -152,10 +152,10 @@ mod tests {
     use crate::parsing::parse_text;
     use crate::syntax_node::MoveLanguage;
 
-    fn parse_root(text: &str) -> SyntaxNode {
+    fn parse_root(text: &str) -> (SyntaxNode, Vec<SyntaxError>) {
         let (tree, errors) = parse_text(text);
         let root = SyntaxNode::new_root(tree);
-        root
+        (root, errors)
     }
 
     #[test]
@@ -172,7 +172,8 @@ mod tests {
 
     #[test]
     fn test_parse_function() {
-        let syntax_root = parse_root("module M { fun main() { 1 }}");
-        dbg!(&syntax_root);
+        let (root, errors) = parse_root("script { fun main(a: u8): u8 { 1 }}");
+        dbg!(&root);
+        dbg!(&errors);
     }
 }

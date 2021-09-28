@@ -62,8 +62,10 @@ pub(crate) fn stmt(p: &mut Parser, with_semi: StmtWithSemi) {
     }
     expr(p);
     match with_semi {
-        StmtWithSemi::Yes => {p.expect(T![;]);},
-        StmtWithSemi::No => {},
+        StmtWithSemi::Yes => {
+            p.expect(T![;]);
+        }
+        StmtWithSemi::No => {}
         StmtWithSemi::Optional => {
             if p.at(T![;]) {
                 p.eat(T![;]);

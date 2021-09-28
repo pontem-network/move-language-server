@@ -1,13 +1,11 @@
-use crate::{T, TokenSet};
 use crate::grammar::{items, name_ref};
 use crate::marker::CompletedMarker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
+use crate::{TokenSet, T};
 
-pub(super) const PATH_FIRST: TokenSet =
-    TokenSet::new(&[IDENT]);
-    // TokenSet::new(&[IDENT, T![self], T![super], T![crate], T![:], T![<]]);
-
+pub(super) const PATH_FIRST: TokenSet = TokenSet::new(&[IDENT]);
+// TokenSet::new(&[IDENT, T![self], T![super], T![crate], T![:], T![<]]);
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum Mode {
