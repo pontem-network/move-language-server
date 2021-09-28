@@ -167,7 +167,11 @@ pub fn find_token(text: &str) -> (SyntaxKind, usize) {
         ' ' | '\n' | '\t' => {
             let mut num_space_chars = 1;
             loop {
-                if !text[num_space_chars..].starts_with("\n\t ") {
+                let remaining_text = &text[num_space_chars..];
+                if !remaining_text.starts_with(" ")
+                    && !remaining_text.starts_with("\n")
+                    && !remaining_text.starts_with("\t")
+                {
                     break;
                 }
                 num_space_chars += 1;

@@ -1,0 +1,21 @@
+SOURCE_FILE@0..28
+  SCRIPT@0..28
+    SCRIPT_KW@0..6 "script"
+    WHITESPACE@6..7 " "
+    ITEM_LIST@7..28
+      L_BRACE@7..8 "{"
+      WHITESPACE@8..13 "\n    "
+      FUN@13..26
+        FUN_KW@13..16 "fun"
+        WHITESPACE@16..17 " "
+        NAME@17..21
+          IDENT@17..21 "main"
+        PARAM_LIST@21..23
+          L_PAREN@21..22 "("
+          R_PAREN@22..23 ")"
+        WHITESPACE@23..24 " "
+        BLOCK_EXPR@24..26
+          L_BRACE@24..25 "{"
+          R_BRACE@25..26 "}"
+      WHITESPACE@26..27 "\n"
+      R_BRACE@27..28 "}"

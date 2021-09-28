@@ -65,6 +65,8 @@ pub(crate) fn root(p: &mut Parser) {
             module(p);
         } else if p.at(T![script]) {
             script(p);
+        } else if p.current().is_trivia() {
+            p.bump_any()
         } else {
             p.error("expected module or script");
         }

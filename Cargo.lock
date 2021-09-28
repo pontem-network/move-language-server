@@ -72,10 +72,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "328b822bdcba4d4e402be8d9adb6eebf269f969f8eadef977a553ff3c4fbcb58"
 
 [[package]]
+name = "dissimilar"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31ad93652f40969dead8d4bf897a41e9462095152eb21c56e5830537e41179dd"
+
+[[package]]
 name = "drop_bomb"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9bda8e21c04aca2ae33ffc2fd8c23134f3cac46db123ba97bd9d3f3b8a4a85e1"
+
+[[package]]
+name = "expect-test"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2300477aab3a378f2ca00a4fbd4dc713654ab7ed790e4017493cb33656280633"
+dependencies = [
+ "dissimilar",
+ "once_cell",
+]
 
 [[package]]
 name = "generate_ast"
@@ -84,6 +100,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "stdx",
+ "test_utils",
  "ungrammar",
  "xshell",
 ]
@@ -163,6 +180,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "once_cell"
+version = "1.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
+
+[[package]]
 name = "parser"
 version = "0.1.0"
 dependencies = [
@@ -229,14 +252,25 @@ dependencies = [
 name = "syntax"
 version = "0.1.0"
 dependencies = [
+ "expect-test",
  "parser",
  "proc-macro2",
  "quote",
  "rowan",
  "stdx",
+ "test_utils",
  "text-size",
  "ungrammar",
  "xshell",
+]
+
+[[package]]
+name = "test_utils"
+version = "0.0.0"
+dependencies = [
+ "dissimilar",
+ "stdx",
+ "text-size",
 ]
 
 [[package]]

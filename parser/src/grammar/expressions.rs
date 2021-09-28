@@ -1,7 +1,7 @@
 mod atom;
 
 use crate::grammar::expressions::atom::{atom_expr, literal};
-use crate::grammar::{name, types};
+use crate::grammar::{name, name_ref, types};
 use crate::marker::{CompletedMarker, Marker};
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
@@ -38,7 +38,59 @@ fn expr_bp(p: &mut Parser, bp: u8) -> Option<CompletedMarker> {
     Some(lhs)
 }
 
+fn postfix_expr(p: &mut Parser, mut lhs: CompletedMarker) -> CompletedMarker {
+    loop {
+        lhs = match p.current() {
+            T!['('] => call_expr(p, lhs),
+            T![.] => dot_expr(p, lhs),
+            _ => break,
+        }
+    }
+    lhs
+}
+
+fn call_expr(p: &mut Parser, lhs: CompletedMarker) -> CompletedMarker {
+    assert!(p.at(T!['(']));
+    let m = lhs.precede(p);
+    arg_list(p);
+    m.complete(p, CALL_EXPR)
+}
+
+fn dot_expr(p: &mut Parser, lhs: CompletedMarker) -> CompletedMarker {
+    assert!(p.at(T![.]));
+    let m = lhs.precede(p);
+    p.bump(T![.]);
+    if p.at(IDENT) {
+        name_ref(p)
+    } else {
+        p.error("expected field name")
+    }
+    m.complete(p, DOT_EXPR)
+}
+
+fn arg_list(p: &mut Parser) {
+    assert!(p.at(T!['(']));
+    let m = p.start();
+    p.bump(T!['(']);
+    while !p.at(T![')']) && !p.at(EOF) {
+        // test arg_with_attr
+        // fn main() {
+        //     foo(92)
+        // }
+        let parsed_expr = expr(p);
+        if parsed_expr.is_none() {
+            break;
+        }
+        if !p.at(T![')']) && !p.expect(T![,]) {
+            break;
+        }
+    }
+    p.eat(T![')']);
+    m.complete(p, ARG_LIST);
+}
+
 fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
+    dbg!(&p.current());
     let m;
     let kind = match p.current() {
         T![*] | T![!] | T![-] => {
@@ -48,7 +100,7 @@ fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
         }
         _ => {
             let lhs = atom_expr(p)?;
-            return Some(lhs);
+            return Some(postfix_expr(p, lhs));
         }
     };
     // parse the interior of the unary expression

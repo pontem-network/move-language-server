@@ -14,6 +14,7 @@ pub mod ast;
 pub mod parsing;
 pub mod syntax_error;
 pub mod syntax_node;
+mod tests;
 
 use crate::ast::{AstNode, SourceFile};
 use crate::syntax_node::SyntaxNode;
@@ -146,34 +147,39 @@ impl SourceFile {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::parsing::parse_text;
-    use crate::syntax_node::MoveLanguage;
-
-    fn parse_root(text: &str) -> (SyntaxNode, Vec<SyntaxError>) {
-        let (tree, errors) = parse_text(text);
-        let root = SyntaxNode::new_root(tree);
-        (root, errors)
-    }
-
-    #[test]
-    fn test_parse_simple_addition() {
-        let syntax_root = parse_root("(1 + ) + (1 + ) + 1; 1 + 1;");
-        dbg!(&syntax_root);
-    }
-
-    #[test]
-    fn test_parse_statements() {
-        let syntax_root = parse_root("{1}; {1+1};");
-        dbg!(&syntax_root);
-    }
-
-    #[test]
-    fn test_parse_function() {
-        let (root, errors) = parse_root("script { fun main() { let a: u8 = 1 + 1; }}");
-        dbg!(&root);
-        dbg!(&errors);
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::parsing::parse_text;
+//     use crate::syntax_node::MoveLanguage;
+//
+//     fn parse_root(text: &str) -> (SyntaxNode, Vec<SyntaxError>) {
+//         let (tree, errors) = parse_text(text);
+//         let root = SyntaxNode::new_root(tree);
+//         (root, errors)
+//     }
+//
+//     #[test]
+//     fn test_parse_simple_addition() {
+//         let syntax_root = parse_root("(1 + ) + (1 + ) + 1; 1 + 1;");
+//         dbg!(&syntax_root);
+//     }
+//
+//     #[test]
+//     fn test_parse_statements() {
+//         let syntax_root = parse_root("{1}; {1+1};");
+//         dbg!(&syntax_root);
+//     }
+//
+//     #[test]
+//     fn test_parse_function() {
+//         let (root, errors) = parse_root(r"
+//         script { fun main() {
+//                 {1};
+//             }
+//         }
+//         ");
+//         dbg!(&root);
+//         dbg!(&errors);
+//     }
+// }

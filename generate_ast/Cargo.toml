@@ -12,3 +12,4 @@ quote = "1.0.9"
 ungrammar = "1.14.4"
 
 stdx = { path = "../stdx" }
+test_utils = { path = "../test_utils" }
