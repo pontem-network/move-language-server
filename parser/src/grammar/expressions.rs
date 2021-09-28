@@ -90,7 +90,6 @@ fn arg_list(p: &mut Parser) {
 }
 
 fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
-    dbg!(&p.current());
     let m;
     let kind = match p.current() {
         T![*] | T![!] | T![-] => {

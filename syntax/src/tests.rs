@@ -7,10 +7,16 @@ use test_utils::project_root;
 
 #[test]
 fn parser_tests() {
-    dir_tests(&test_data_dir(), &["parser"], "txt", |text, path| {
+    dir_tests(&test_data_dir(), &["parser/ok"], "txt", |text, path| {
         let parse = SourceFile::parse(text);
         let errors = parse.errors();
         assert_errors_are_absent(errors, path);
+        parse.debug_dump()
+    });
+    dir_tests(&test_data_dir(), &["parser/err"], "txt", |text, path| {
+        let parse = SourceFile::parse(text);
+        let errors = parse.errors();
+        assert_errors_are_present(errors, path);
         parse.debug_dump()
     });
 }
