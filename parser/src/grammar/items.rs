@@ -1,3 +1,5 @@
+mod adt;
+
 use crate::grammar::params::param_list;
 use crate::grammar::types::type_;
 use crate::grammar::{block_expr, name, name_r};
@@ -7,7 +9,7 @@ use crate::SyntaxKind::{self, *};
 use crate::TokenSet;
 
 pub(crate) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
-    // T![struct],
+    T![struct],
     // T![const],
     // T![let],
     // T![use],
@@ -60,7 +62,7 @@ pub(crate) fn item_list(p: &mut Parser) {
 
 pub(crate) fn item(p: &mut Parser) {
     let m = p.start();
-    let m = match maybe_item(p, m) {
+    let m = match opt_item(p, m) {
         Ok(()) => {
             if p.at(T![;]) {
                 p.err_and_bump(
@@ -88,12 +90,13 @@ pub(crate) fn item(p: &mut Parser) {
 }
 
 /// Try to parse an item, completing `m` in case of success.
-pub(crate) fn maybe_item(p: &mut Parser, m: Marker) -> Result<(), Marker> {
+pub(crate) fn opt_item(p: &mut Parser, m: Marker) -> Result<(), Marker> {
     match p.current() {
         T![fun] => {
             fun(p);
             m.complete(p, FUN);
         }
+        T![struct] => adt::struct_(p, m),
         _ => {
             p.error("expected an item");
             m.complete(p, ERROR);

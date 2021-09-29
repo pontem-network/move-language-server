@@ -1,5 +1,5 @@
 use crate::grammar::paths;
-use crate::grammar::paths::is_use_path_start;
+use crate::grammar::paths::is_path_start;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
 use crate::TokenSet;
@@ -22,7 +22,7 @@ pub(crate) fn type_(p: &mut Parser) {
     let allow_bounds = false;
     match p.current() {
         T![&] => ref_type(p),
-        _ if is_use_path_start(p) => path_type(p),
+        _ if is_path_start(p) => path_type(p),
         _ => {
             p.err_recover("expected type", TYPE_RECOVERY_SET);
         }
@@ -39,7 +39,7 @@ pub(crate) fn ref_type(p: &mut Parser) {
 }
 
 pub(crate) fn path_type(p: &mut Parser) {
-    assert!(is_use_path_start(p));
+    assert!(is_path_start(p));
     let m = p.start();
     // let m = p.start();
 

@@ -91,7 +91,7 @@ fn path_segment(p: &mut Parser, mode: Mode, first: bool) {
     m.complete(p, PATH_SEGMENT);
 }
 
-pub(crate) fn is_use_path_start(p: &Parser) -> bool {
+pub(crate) fn is_path_start(p: &Parser) -> bool {
     match p.current() {
         IDENT /* todo: address */ => true,
         // IDENT | T![self] | T![super] | T![crate] => true,

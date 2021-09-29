@@ -3,6 +3,8 @@ mod items;
 mod params;
 mod paths;
 mod types;
+mod generic_params;
+mod patterns;
 
 use crate::grammar::expressions::{stmt, StmtWithSemi};
 use crate::grammar::items::{item, module, script};
@@ -72,4 +74,14 @@ pub(crate) fn root(p: &mut Parser) {
         }
     }
     m.complete(p, SOURCE_FILE);
+}
+
+fn error_block(p: &mut Parser, message: &str) {
+    assert!(p.at(T!['{']));
+    let m = p.start();
+    p.error(message);
+    p.bump(T!['{']);
+    expressions::expr_block_contents(p);
+    p.eat(T!['}']);
+    m.complete(p, ERROR);
 }

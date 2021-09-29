@@ -1,7 +1,8 @@
-mod atom;
+pub mod atom;
 
 use crate::grammar::expressions::atom::{atom_expr, literal};
-use crate::grammar::{name, name_ref, types};
+use crate::grammar::patterns::pattern;
+use crate::grammar::{error_block, name, name_ref, types};
 use crate::marker::{CompletedMarker, Marker};
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
@@ -42,7 +43,7 @@ fn postfix_expr(p: &mut Parser, mut lhs: CompletedMarker) -> CompletedMarker {
     loop {
         lhs = match p.current() {
             T!['('] => call_expr(p, lhs),
-            T![.] => dot_expr(p, lhs),
+            T![.] => field_expr(p, lhs),
             _ => break,
         }
     }
@@ -56,7 +57,7 @@ fn call_expr(p: &mut Parser, lhs: CompletedMarker) -> CompletedMarker {
     m.complete(p, CALL_EXPR)
 }
 
-fn dot_expr(p: &mut Parser, lhs: CompletedMarker) -> CompletedMarker {
+fn field_expr(p: &mut Parser, lhs: CompletedMarker) -> CompletedMarker {
     assert!(p.at(T![.]));
     let m = lhs.precede(p);
     p.bump(T![.]);
@@ -113,14 +114,11 @@ fn lhs(p: &mut Parser) -> Option<CompletedMarker> {
 //     let b: i32;
 //     let c = 92;
 //     let d: i32 = 92;
-//     let e: !;
-//     let _: ! = {};
-//     let f = #[attr]||{};
 // }
 fn let_stmt(p: &mut Parser, m: Marker, with_semi: StmtWithSemi) {
     assert!(p.at(T![let]));
     p.bump(T![let]);
-    name(p);
+    pattern(p);
 
     if p.at(T![:]) {
         types::ascription(p);
@@ -207,5 +205,63 @@ fn current_op(p: &Parser) -> (u8, SyntaxKind) {
         // T![as]                 => (12, T![as]),
 
         _                      => NOT_AN_OP
+    }
+}
+
+// test record_lit
+// fn foo() {
+//     S {};
+//     S { x, y: 32, };
+//     S { x, y: 32, ..Default::default() };
+//     TupleStruct { 0: 1 };
+// }
+pub(crate) fn record_expr_field_list(p: &mut Parser) {
+    assert!(p.at(T!['{']));
+    let m = p.start();
+    p.bump(T!['{']);
+    while !p.at(EOF) && !p.at(T!['}']) {
+        let m = p.start();
+        match p.current() {
+            IDENT | INTEGER_NUMBER => {
+                // test_err record_literal_before_ellipsis_recovery
+                // fn main() {
+                //     S { field ..S::default() }
+                // }
+                if p.nth_at(1, T![:]) {
+                    name_ref(p);
+                    p.expect(T![:]);
+                }
+                expr(p);
+                m.complete(p, RECORD_EXPR_FIELD);
+            }
+            // T![.] if p.at(T![..]) => {
+            //     m.abandon(p);
+            //     p.bump(T![..]);
+            //     expr(p);
+            // }
+            T!['{'] => {
+                error_block(p, "expected a field");
+                m.abandon(p);
+            }
+            _ => {
+                p.err_and_bump("expected identifier");
+                m.abandon(p);
+            }
+        }
+        if !p.at(T!['}']) {
+            p.expect(T![,]);
+        }
+    }
+    p.expect(T!['}']);
+    m.complete(p, RECORD_EXPR_FIELD_LIST);
+}
+
+pub(super) fn expr_block_contents(p: &mut Parser) {
+    while !p.at(EOF) && !p.at(T!['}']) {
+        if p.at(T![;]) {
+            p.bump(T![;]);
+            continue;
+        }
+        stmt(p, StmtWithSemi::Yes)
     }
 }

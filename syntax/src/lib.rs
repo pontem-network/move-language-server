@@ -126,3 +126,16 @@ impl SourceFile {
         Parse { green, errors: Arc::new(errors), _ty: PhantomData }
     }
 }
+
+#[cfg(test)]
+mod inline_tests {
+    use super::*;
+
+    #[test]
+    fn parser_test() {
+        let text = "module M { fun main() { let Num { value, dec } = get_tuple(); } }";
+        let (green, mut errors) = parsing::parse_text(text);
+        let root = SyntaxNode::new_root(green.clone());
+        dbg!(&root);
+    }
+}

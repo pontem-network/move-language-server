@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use super::*;
-use crate::grammar::block_expr_unchecked;
+use crate::grammar::{block_expr_unchecked, paths};
 
 // test expr_literals
 // fn foo() {
@@ -82,9 +82,26 @@ pub(super) fn atom_expr(p: &mut Parser) -> Option<CompletedMarker> {
 }
 
 fn path_expr(p: &mut Parser) -> CompletedMarker {
+    // let m = p.start();
+    // p.bump(IDENT);
+    // m.complete(p, PATH_EXPR)
+
+    assert!(paths::is_path_start(p));
     let m = p.start();
-    p.bump(IDENT);
-    m.complete(p, PATH_EXPR)
+    paths::expr_path(p);
+    match p.current() {
+        T!['{'] => {
+            record_expr_field_list(p);
+            m.complete(p, RECORD_EXPR)
+            // (m.complete(p, RECORD_EXPR), BlockLike::NotBlock)
+        }
+        // T![!] if !p.at(T![!=]) => {
+        //     let block_like = items::macro_call_after_excl(p);
+        //     (m.complete(p, MACRO_CALL), block_like)
+        // }
+        // _ => (m.complete(p, PATH_EXPR), BlockLike::NotBlock),
+        _ => m.complete(p, PATH_EXPR),
+    }
 }
 
 // test tuple_expr
