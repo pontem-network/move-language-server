@@ -1,0 +1,56 @@
+// Move Un-Grammar.
+//
+// This grammar specifies the structure of Rust's concrete syntax tree.
+// It does not specify parsing rules (ambiguities, precedence, etc are out of scope).
+// Tokens are processed -- contextual keywords are recognised, compound operators glued.
+//
+// Legend:
+//
+//   //          -- comment
+//   Name =      -- non-terminal definition
+//   'ident'     -- token (terminal)
+//   A B         -- sequence
+//   A | B       -- alternation
+//   A*          -- zero or more repetition
+//   A?          -- zero or one repetition
+//   (A)         -- same as A
+//   label:A     -- suggested name for field of AST node
+
+SourceFile =
+    (ScriptDef)*
+
+ScriptDef =
+    '{' FunctionDef* '}'
+
+FunctionDef =
+    'fun' 'ident' '(' ')' '{' (ExprStmt)* '}'
+
+//Stmt =
+//    LetStmt
+//    | ExprStmt
+
+// LetStmt =
+//    'let' Pat ':'
+ExprStmt =
+    Expr ';'
+
+Expr =
+    BinExpr
+    | Literal
+
+//PrefixExpr =
+//    ('!' | '*' | '-') Expr
+
+Literal =
+    'integer_number' | 'hex_string' | 'byte_string' | 'true' | 'false'
+
+BinExpr =
+    lhs:Expr
+    '+' | '-' | '*' | '/' | '%'
+//        | '||' | '&&'
+//        | '==' | '!=' | '<=' | '>=' | '<' | '>'
+//        | '+' | '*' | '-' | '/' | '%' | '<<' | '>>' | '^' | '|' | '&'
+//        | '=' | '+=' | '/=' | '*=' | '%=' | '>>=' | '<<=' | '-=' | '|=' | '&=' | '^='
+//    )
+    rhs:Expr
+

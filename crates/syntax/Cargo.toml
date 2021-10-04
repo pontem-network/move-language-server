@@ -1,0 +1,22 @@
+[package]
+name = "syntax"
+version = "0.0.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ungrammar = "1.14.4"
+quote = "1.0.9"
+xshell = "0.1.14"
+proc-macro2 = "1.0.28"
+rowan = "0.13.2"
+text-size = "1.1.0"
+smol_str = "0.1.18"
+
+parser = { path = "../parser"}
+stdx = { path = "../stdx" }
+
+expect-test = "1.1.0"
+
+test_utils = { path = "../test_utils" }
