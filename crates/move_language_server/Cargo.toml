@@ -1,0 +1,32 @@
+[package]
+name = "move_language_server"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.26"
+lsp-types = "0.90.0"
+lsp-server = "0.5.2"
+crossbeam-channel = "0.5.0"
+rustc-hash = "1.1.0"
+parking_lot = "0.11.2"
+threadpool = "1.7.1"
+serde = { version = "1.0.106", features = ["derive"] }
+serde_json = { version = "1.0.48", features = ["preserve_order"] }
+itertools = "0.10.1"
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.2", default-features = false, features = ["env-filter", "registry", "fmt", "tracing-log"] }
+tracing-log = "0.1.2"
+tracing-tree = { version = "0.1.10" }
+always-assert = "0.1"
+
+stdx = { path = "../stdx" }
+syntax = { path = "../syntax" }
+project_model = { path = "../project_model" }
+ide = { path = "../ide" }
+ide_diagnostics = { path = "../ide_diagnostics" }
+vfs = { path = "../vfs" }
+ide_db = { path = "../ide_db" }

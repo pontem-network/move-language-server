@@ -3,11 +3,13 @@ mod input;
 mod change;
 pub mod fixture;
 
+use rustc_hash::FxHashSet;
 use std::{panic, sync::Arc};
 
 use syntax::{ast, Parse, SourceFile, TextRange, TextSize};
 
-use crate::input::{SourceRoot, SourceRootId};
+pub use crate::input::{SourceRoot, SourceRootId};
+pub use change::Change;
 pub use salsa::{self, Cancelled};
 pub use vfs::{file_set::FileSet, AnchoredPath, AnchoredPathBuf, FileId, VfsPath};
 
@@ -24,6 +26,8 @@ macro_rules! impl_intern_key {
         }
     };
 }
+
+pub const DEFAULT_LRU_CAP: usize = 128;
 
 pub trait Upcast<T: ?Sized> {
     fn upcast(&self) -> &T;
@@ -60,6 +64,16 @@ pub trait SourceDatabase: std::fmt::Debug {
     /// Contents of the source root.
     #[salsa::input]
     fn source_root(&self, id: SourceRootId) -> Arc<SourceRoot>;
+
+    /// The set of "local" (that is, from the current workspace) roots.
+    /// Files in local roots are assumed to change frequently.
+    #[salsa::input]
+    fn local_roots(&self) -> Arc<FxHashSet<SourceRootId>>;
+
+    /// The set of roots for crates.io libraries.
+    /// Files in libraries are assumed to never change.
+    #[salsa::input]
+    fn library_roots(&self) -> Arc<FxHashSet<SourceRootId>>;
 }
 
 fn parse_query(db: &dyn SourceDatabase, file_id: FileId) -> Parse<ast::SourceFile> {
