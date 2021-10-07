@@ -1,17 +1,26 @@
-use std::convert::TryFrom;
-use std::env;
-use anyhow::Result;
 use lsp_server::Connection;
-use move_language_server::{from_json, config::Config};
-use vfs::AbsPathBuf;
+use move_language_server::lsp_ext::supports_utf8;
+use move_language_server::Result;
+use move_language_server::{config::Config, from_json};
 use project_model::ProjectManifest;
+use std::convert::TryFrom;
+use std::{env, process};
+use vfs::AbsPathBuf;
 
 fn main() {
-    run_server();
+    if let Err(err) = try_main() {
+        tracing::error!("Unexpected error: {}", err);
+        eprintln!("{}", err);
+        process::exit(101);
+    }
+}
+
+fn try_main() -> Result<()> {
+    run_server()
 }
 
 fn run_server() -> Result<()> {
-    tracing::info!("server version {} will start", env!("REV"));
+    // tracing::info!("server version {} will start", env!("REV"));
 
     let (connection, io_threads) = Connection::stdio();
 
@@ -46,7 +55,7 @@ fn run_server() -> Result<()> {
             version: None,
             // version: Some(String::from(env!("REV"))),
         }),
-        // offset_encoding: if supports_utf8(&config.caps) { Some("utf-8".to_string()) } else { None },
+        offset_encoding: if supports_utf8(&config.caps) { Some("utf-8".to_string()) } else { None },
     };
     let initialize_result = serde_json::to_value(initialize_result).unwrap();
     connection.initialize_finish(initialize_id, initialize_result)?;

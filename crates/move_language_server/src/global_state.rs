@@ -5,6 +5,7 @@
 
 use std::{sync::Arc, time::Instant};
 
+use crate::config::Config;
 use crate::diagnostics::DiagnosticCollection;
 use crate::line_index::{LineEndings, LineIndex, OffsetEncoding};
 use crate::main_loop::Task;
@@ -19,9 +20,9 @@ use ide::{Analysis, AnalysisHost, Cancellable};
 use ide_db::base_db::{Change, FileId};
 use lsp_types::{SemanticTokens, Url};
 use parking_lot::{Mutex, RwLock};
+use project_model::ProjectWorkspace;
 use rustc_hash::FxHashMap;
 use vfs::AnchoredPathBuf;
-use crate::config::Config;
 
 // Enforces drop order
 pub(crate) struct Handle<H, C> {
@@ -56,6 +57,8 @@ pub(crate) struct GlobalState {
     pub(crate) vfs_progress_config_version: u32,
     pub(crate) vfs_progress_n_total: usize,
     pub(crate) vfs_progress_n_done: usize,
+
+    pub(crate) workspaces: Arc<Vec<ProjectWorkspace>>,
 }
 
 /// An immutable snapshot of the world's state at a point in time.
@@ -80,7 +83,7 @@ impl GlobalState {
             sender,
             req_queue: ReqQueue::default(),
             task_pool,
-            config,
+            config: Arc::new(config),
             analysis_host,
             diagnostics: Default::default(),
             mem_docs: MemDocs::default(),
@@ -93,6 +96,8 @@ impl GlobalState {
             vfs_progress_config_version: 0,
             vfs_progress_n_total: 0,
             vfs_progress_n_done: 0,
+
+            workspaces: Arc::new(Vec::new()),
         };
         this
     }

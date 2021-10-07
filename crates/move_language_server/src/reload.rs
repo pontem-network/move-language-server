@@ -1,10 +1,19 @@
 //! Project loading & configuration updates
 use ide_db::base_db::{SourceRoot, VfsPath};
+use project_model::ProjectWorkspace;
 use std::{mem, sync::Arc};
 
+use crate::config::LinkedProject;
 use crate::global_state::GlobalState;
 use crate::lsp_ext;
 use vfs::{file_set::FileSetConfig, AbsPath, AbsPathBuf, ChangeKind};
+
+// #[derive(Debug)]
+// pub(crate) enum ProjectWorkspaceProgress {
+//     Begin,
+//     Report(String),
+//     End(Vec<anyhow::Result<ProjectWorkspace>>),
+// }
 
 impl GlobalState {
     pub(crate) fn is_quiescent(&self) -> bool {
@@ -19,6 +28,40 @@ impl GlobalState {
             message: None,
         };
         status
+    }
+
+    pub(crate) fn fetch_workspaces(&mut self) {
+        tracing::info!("will fetch workspaces");
+
+        self.task_pool.handle.spawn_with_sender({
+            let linked_projects = self.config.linked_projects();
+            let detached_files = self.config.detached_files().to_vec();
+            move |sender| {
+                // let progress = {
+                //     let sender = sender.clone();
+                //     move |msg| {
+                //         sender
+                //             .send(Task::FetchWorkspace(ProjectWorkspaceProgress::Report(msg)))
+                //             .unwrap()
+                //     }
+                // };
+                //
+                // sender.send(Task::FetchWorkspace(ProjectWorkspaceProgress::Begin)).unwrap();
+
+                let mut workspaces = linked_projects
+                    .iter()
+                    .map(|project| ProjectWorkspace::load(project.manifest.clone()))
+                    .collect::<Vec<_>>();
+                if !detached_files.is_empty() {
+                    workspaces.push(ProjectWorkspace::load_detached_files(detached_files));
+                }
+
+                // tracing::info!("did fetch workspaces {:?}", workspaces);
+                // sender
+                //     .send(Task::FetchWorkspace(ProjectWorkspaceProgress::End(workspaces)))
+                //     .unwrap();
+            }
+        });
     }
 }
 

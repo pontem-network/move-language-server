@@ -1,15 +1,20 @@
+#![allow(unused)]
+
 use anyhow::{bail, format_err, Context, Result};
 
+use crate::manifest_path::ManifestPath;
+use paths::{AbsPath, AbsPathBuf};
+use rustc_hash::FxHashSet;
 use std::convert::{TryFrom, TryInto};
 use std::fs::{read_dir, ReadDir};
-use std::{fs, io};
 use std::process::Command;
-use rustc_hash::FxHashSet;
-use paths::{AbsPath, AbsPathBuf};
-use crate::manifest_path::ManifestPath;
+use std::{fs, io};
 
 mod manifest_path;
 mod dove_toml;
+mod workspace;
+
+pub use workspace::ProjectWorkspace;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub enum ProjectManifest {
@@ -27,7 +32,10 @@ impl ProjectManifest {
         if path.file_name().unwrap_or_default() == "Dove.toml" {
             return Ok(ProjectManifest::DoveToml(path));
         }
-        bail!("project root must point to Dove.toml (dove) or Move.toml (move-cli): {}", path.display())
+        bail!(
+            "project root must point to Dove.toml (dove) or Move.toml (move-cli): {}",
+            path.display()
+        )
     }
 
     pub fn discover_single(path: &AbsPath) -> Result<ProjectManifest> {

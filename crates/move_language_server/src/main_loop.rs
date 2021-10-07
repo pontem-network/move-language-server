@@ -4,6 +4,7 @@ use crossbeam_channel::Receiver;
 use std::fmt;
 use std::time::{Duration, Instant};
 
+use crate::config::Config;
 use crate::dispatch::{NotificationDispatcher, RequestDispatcher};
 use crate::global_state::{file_id_to_url, GlobalState};
 use crate::lsp_utils::{apply_document_changes, is_cancelled, notification_is, Progress};
@@ -14,7 +15,6 @@ use ide_db::base_db::SourceDatabase;
 use lsp_server::Connection;
 use lsp_types::notification::Notification;
 use vfs::VfsPath;
-use crate::config::Config;
 
 pub fn main_loop(config: Config, connection: lsp_server::Connection) -> Result<()> {
     // Windows scheduler implements priority boosts: if thread waits for an
@@ -110,6 +110,8 @@ impl GlobalState {
                 |_, _| (),
             );
         }
+
+        self.fetch_workspaces();
 
         while let Some(event) = self.next_event(&inbox) {
             if let Event::Lsp(lsp_server::Message::Notification(not)) = &event {

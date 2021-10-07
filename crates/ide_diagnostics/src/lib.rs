@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 //! Diagnostics rendering and fixits.
 //!
 //! Most of the diagnostics originate from the dark depth of the compiler, and

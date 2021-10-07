@@ -6,10 +6,11 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow = "1.0.26"
+anyhow = "1.0.44"
 rustc-hash = "1.1.0"
 serde = { version = "1.0.106", features = ["derive"] }
 serde_json = "1.0.48"
+toml = "0.5.8"
 
 base_db = { path = "../base_db", version = "0.0.0" }
 paths = { path = "../paths", version = "0.0.0" }

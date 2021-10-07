@@ -1,9 +1,9 @@
-use ungrammar::Grammar;
-use test_utils::{ensure_file_contents, project_root};
 use crate::ast::gen_nodes::generate_nodes;
 use crate::ast::gen_tokens::generate_tokens;
 use crate::ast::lower;
 use crate::syntax_kind::{generate_syntax_kinds, KINDS_SRC};
+use test_utils::{ensure_file_contents, project_root};
+use ungrammar::Grammar;
 
 fn move_grammar() -> Grammar {
     let move_ungram_src = include_str!("./move.ungram");

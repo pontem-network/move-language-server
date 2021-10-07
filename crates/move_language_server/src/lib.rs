@@ -1,8 +1,10 @@
+#![allow(unused)]
+
 use serde::de::DeserializeOwned;
 use std::fmt;
 
 mod global_state;
-mod lsp_ext;
+pub mod lsp_ext;
 mod line_index;
 mod handlers;
 mod to_proto;
@@ -17,8 +19,8 @@ mod reload;
 mod main_loop;
 pub mod config;
 
-pub use main_loop::main_loop;
 pub use caps::server_capabilities;
+pub use main_loop::main_loop;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Result<T, E = Error> = std::result::Result<T, E>;
