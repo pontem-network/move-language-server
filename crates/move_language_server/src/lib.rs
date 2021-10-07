@@ -5,6 +5,7 @@ use std::fmt;
 
 mod global_state;
 pub mod lsp_ext;
+pub mod logger;
 mod line_index;
 mod handlers;
 mod to_proto;

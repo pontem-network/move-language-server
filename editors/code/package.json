@@ -1,0 +1,160 @@
+{
+    "name": "move-language-new-lsp",
+    "version": "0.5.0",
+    "description": "Move IDE for VSCode (LSP)",
+    "publisher": "PontemNetwork",
+    "displayName": "Move Language (LSP)",
+    "categories": [
+        "Programming Languages",
+        "Snippets",
+        "Other"
+    ],
+    "scripts": {
+        "vscode:prepublish": "rm bin/*; npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "prettier": "prettier --write src/ package.json"
+    },
+    "dependencies": {
+        "node-fetch": "^2.6.5",
+        "npm": "^7.8.0",
+        "vscode-languageclient": "^7.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^14.17.21",
+        "@types/node-fetch": "^2.5.12",
+        "@types/vscode": "^1.60.0",
+        "prettier": "^2.4.1",
+        "pretty-quick": "^3.1.1",
+        "typescript": "^4.4.3"
+    },
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "activationEvents": [
+        "onLanguage:move",
+        "workspaceContains:**/Dove.toml"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "taskDefinitions": [
+            {
+                "type": "dove",
+                "properties": {
+                    "subcommand": {
+                        "type": "string"
+                    },
+                    "args": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "subcommand"
+                ]
+            }
+        ],
+        "commands": [
+            {
+                "command": "move.reload",
+                "title": "Reload move-language-server",
+                "category": "Move"
+            }
+        ],
+        "languages": [
+            {
+                "id": "move",
+                "aliases": [
+                    "Move",
+                    "LibraMove",
+                    "Libra",
+                    "Diem",
+                    "DiemMove"
+                ],
+                "extensions": [
+                    ".move"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "move",
+                "scopeName": "source.move",
+                "path": "./syntaxes/move.tmLanguage.json"
+            }
+        ],
+        "configuration": {
+            "title": "Move Language",
+            "properties": {
+                "move.languageServerPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Custom path to Move Language Server executable"
+                },
+                "move.doveExecutablePath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Custom path to Dove executable"
+                },
+                "move.trace.extension": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable logging of VS Code extension itself"
+                },
+                "move.trace.server": {
+                    "type": "string",
+                    "scope": "window",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "enumDescriptions": [
+                        "No traces",
+                        "Error only",
+                        "Full log"
+                    ],
+                    "default": "off",
+                    "description": "Trace requests to the move-language-server (this is usually overly verbose and not recommended for regular users)."
+                }
+            }
+        }
+    },
+    "icon": "img/logo.256.png",
+    "galleryBanner": {
+        "color": "#FFFFFF",
+        "theme": "light"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pontem-network/vscode-move-ide.git"
+    },
+    "keywords": [
+        "libra",
+        "move",
+        "dfinance",
+        "pontem",
+        "move language",
+        "ide",
+        "move ide",
+        "move-ide",
+        "libra-ide",
+        "dfinance-ide",
+        "diem",
+        "diem-ide"
+    ],
+    "author": "Pontem Network <support@pontem.network>",
+    "license": "Apache License 2.0",
+    "bugs": {
+        "url": "https://github.com/pontem-network/vscode-move-ide/issues"
+    },
+    "homepage": "https://github.com/pontem-network/vscode-move-ide/tree/release-0.4#readme",
+    "__metadata": {
+        "id": "7a08f3ad-eba4-44de-bca1-e41d38b68a5c",
+        "publisherDisplayName": "Pontem Network",
+        "publisherId": "a21ee11b-2c64-42b1-a3d1-78e5ee8191a6"
+    }
+}

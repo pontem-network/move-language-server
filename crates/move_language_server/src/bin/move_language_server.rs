@@ -1,10 +1,11 @@
 use lsp_server::Connection;
 use move_language_server::lsp_ext::supports_utf8;
-use move_language_server::Result;
 use move_language_server::{config::Config, from_json};
+use move_language_server::{logger, Result};
 use project_model::ProjectManifest;
 use std::convert::TryFrom;
-use std::{env, process};
+use std::path::Path;
+use std::{env, fs, process};
 use vfs::AbsPathBuf;
 
 fn main() {
@@ -16,11 +17,39 @@ fn main() {
 }
 
 fn try_main() -> Result<()> {
+    let mut log_file = None;
+
+    let env_log_file = env::var("RA_LOG_FILE").ok();
+    if let Some(env_log_file) = env_log_file.as_deref() {
+        log_file = Some(Path::new(env_log_file));
+    }
+    setup_logging(log_file)?;
+
     run_server()
 }
 
+fn setup_logging(log_file: Option<&Path>) -> Result<()> {
+    if env::var("RUST_BACKTRACE").is_err() {
+        env::set_var("RUST_BACKTRACE", "short");
+    }
+
+    let log_file = match log_file {
+        Some(path) => {
+            if let Some(parent) = path.parent() {
+                let _ = fs::create_dir_all(parent);
+            }
+            Some(fs::File::create(path)?)
+        }
+        None => None,
+    };
+    let filter = env::var("MOVE_LS_LOG").ok();
+    logger::Logger::new(log_file, filter.as_deref()).install()?;
+
+    Ok(())
+}
+
 fn run_server() -> Result<()> {
-    // tracing::info!("server version {} will start", env!("REV"));
+    tracing::info!("server version {} will start", env!("REV"));
 
     let (connection, io_threads) = Connection::stdio();
 
@@ -52,8 +81,7 @@ fn run_server() -> Result<()> {
         capabilities: server_capabilities,
         server_info: Some(lsp_types::ServerInfo {
             name: String::from("move-language-server"),
-            version: None,
-            // version: Some(String::from(env!("REV"))),
+            version: Some(String::from(env!("REV"))),
         }),
         offset_encoding: if supports_utf8(&config.caps) { Some("utf-8".to_string()) } else { None },
     };

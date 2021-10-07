@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 mod ast;
 mod generate_all;
 mod syntax_kind;
