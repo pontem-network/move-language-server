@@ -27,16 +27,24 @@ pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     ATSIGN,
 ]);
 
-pub(crate) fn diem_address_lit(p: &mut Parser) -> Option<CompletedMarker> {
+pub(crate) fn address_lit(p: &mut Parser) -> Option<CompletedMarker> {
     assert!(p.at(T![@]));
-
     let m = p.start();
     p.bump(T![@]);
-    if !(p.current() == INTEGER_NUMBER) || !p.current_text().starts_with("0x") {
-        return None;
+    match p.current() {
+        INTEGER_NUMBER if p.current_text().starts_with("0x") => {
+            p.bump(INTEGER_NUMBER);
+            Some(m.complete(p, DIEM_ADDRESS_LIT))
+        }
+        IDENT => {
+            p.bump(IDENT);
+            Some(m.complete(p, NAMED_ADDRESS_LIT))
+        }
+        _ => {
+            m.abandon(p);
+            None
+        }
     }
-    p.bump(INTEGER_NUMBER);
-    Some(m.complete(p, DIEM_ADDRESS))
 }
 
 pub(crate) fn literal(p: &mut Parser) -> Option<CompletedMarker> {
@@ -46,7 +54,7 @@ pub(crate) fn literal(p: &mut Parser) -> Option<CompletedMarker> {
     let m = p.start();
     match p.current() {
         T![@] => {
-            diem_address_lit(p);
+            address_lit(p);
         }
         _ => p.bump_any(),
     };
