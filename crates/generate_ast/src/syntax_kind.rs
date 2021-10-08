@@ -61,7 +61,8 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
     literals: &["INTEGER_NUMBER", "BYTE_STRING", "HEX_STRING"],
     nodes: &[
         "SOURCE_FILE",
-        "MODULE",
+        "MODULE_DEF",
+        "ADDRESS_IDENT",
         "SCRIPT_DEF",
         "FUNCTION_DEF",
         "ITEM_LIST",
@@ -107,7 +108,7 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
         "IDENT_PAT",
         "ADDRESS_LIT",
     ],
-    tokens: &["ERROR", "IDENT", "WHITESPACE", "COMMENT"],
+    tokens: &["ERROR", "IDENT", "WHITESPACE", "COMMENT", "DIEM_ADDRESS"],
 };
 
 pub(crate) fn generate_syntax_kinds(grammar: SymbolKindsSrc<'_>) -> String {

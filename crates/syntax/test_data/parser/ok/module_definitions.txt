@@ -1,0 +1,37 @@
+SOURCE_FILE@0..49
+  MODULE_DEF@0..12
+    MODULE_KW@0..6 "module"
+    WHITESPACE@6..7 " "
+    NAME@7..9
+      IDENT@7..9 "M1"
+    WHITESPACE@9..10 " "
+    ITEM_LIST@10..12
+      L_BRACE@10..11 "{"
+      R_BRACE@11..12 "}"
+  WHITESPACE@12..13 "\n"
+  MODULE_DEF@13..30
+    MODULE_KW@13..19 "module"
+    WHITESPACE@19..20 " "
+    ADDRESS_IDENT@20..23
+      DIEM_ADDRESS@20..23 "0x1"
+    COLON_COLON@23..25 "::"
+    NAME@25..27
+      IDENT@25..27 "M2"
+    WHITESPACE@27..28 " "
+    ITEM_LIST@28..30
+      L_BRACE@28..29 "{"
+      R_BRACE@29..30 "}"
+  WHITESPACE@30..31 "\n"
+  MODULE_DEF@31..48
+    MODULE_KW@31..37 "module"
+    WHITESPACE@37..38 " "
+    ADDRESS_IDENT@38..41
+      IDENT@38..41 "Std"
+    COLON_COLON@41..43 "::"
+    NAME@43..45
+      IDENT@43..45 "M3"
+    WHITESPACE@45..46 " "
+    ITEM_LIST@46..48
+      L_BRACE@46..47 "{"
+      R_BRACE@47..48 "}"
+  WHITESPACE@48..49 "\n"

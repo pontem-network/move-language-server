@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::grammar::{block_expr_unchecked, paths};
+use crate::parser;
 
 // test expr_literals
 // fn foo() {
@@ -30,14 +31,22 @@ pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     ATSIGN,
 ]);
 
+pub(crate) fn bump_address(p: &mut Parser) -> bool {
+    if p.current() == IDENT {
+        p.bump(IDENT);
+    } else if p.current() == INTEGER_NUMBER && p.current_text().starts_with("0x") {
+        p.bump_remap(DIEM_ADDRESS);
+    } else {
+        return false;
+    }
+    true
+}
+
 pub(crate) fn address_lit(p: &mut Parser) -> CompletedMarker {
     assert!(p.at(T![@]));
     let m = p.start();
     p.bump(T![@]);
-    if p.current() == IDENT || (p.current() == INTEGER_NUMBER && p.current_text().starts_with("0x"))
-    {
-        p.bump_any();
-    } else {
+    if !bump_address(p) {
         p.error_and_skip_until("expected address literal", EXPR_STMT_RECOVERY);
     }
     m.complete(p, ADDRESS_LIT)

@@ -6,7 +6,8 @@ use rowan::{GreenNode, TextRange, TextSize};
 
 use crate::syntax_error::SyntaxError;
 use crate::syntax_node::SyntaxTreeBuilder;
-use parser::{SyntaxKind, Token, TreeSink};
+use parser::SyntaxKind::{self, *};
+use parser::{Token, TreeSink};
 
 /// Bridges the parser with our specific syntax tree representation.
 ///
@@ -33,7 +34,10 @@ impl<'a> TreeSink for TextTreeSink<'a> {
             State::PendingFinish => self.inner.finish_node(),
             State::Normal => (),
         }
-        self.eat_trivias();
+        if self.token_pos != 0 {
+            // add trivias to the current node if there is one
+            self.eat_trivias();
+        }
         let n_tokens = n_tokens as usize;
         let len = self.tokens[self.token_pos..self.token_pos + n_tokens]
             .iter()
@@ -60,20 +64,21 @@ impl<'a> TreeSink for TextTreeSink<'a> {
         // let mut trivia_end =
         //     self.text_pos + leading_trivias.iter().map(|it| it.len).sum::<TextSize>();
 
-        let n_attached_trivias = 0;
+        // let n_attached_trivias = 0;
         // let n_attached_trivias = {
-        // let leading_trivias = leading_trivias.iter().rev().map(|it| {
-        //     let next_end = trivia_end - it.len;
-        //     let range = TextRange::new(next_end, trivia_end);
-        //     trivia_end = next_end;
-        //     (it.kind, &self.text[range])
-        // });
-        // 0
-        // n_attached_trivias(kind, leading_trivias)
+        //     let leading_trivias = leading_trivias.iter().rev().map(|it| {
+        //         let next_end = trivia_end - it.len;
+        //         let range = TextRange::new(next_end, trivia_end);
+        //         trivia_end = next_end;
+        //         (it.kind, &self.text[range])
+        //     });
+        //     0
+        //     // n_attached_trivias(kind, leading_trivias)
         // };
-        self.eat_n_trivias(n_trivias - n_attached_trivias);
+        // self.eat_n_trivias(n_trivias - n_attached_trivias);
+        self.eat_n_trivias(n_trivias);
         self.inner.start_node(kind);
-        self.eat_n_trivias(n_attached_trivias);
+        // self.eat_n_trivias(n_attached_trivias);
     }
 
     fn finish_node(&mut self) {
@@ -144,8 +149,7 @@ impl<'a> TextTreeSink<'a> {
 //     trivias: impl Iterator<Item = (SyntaxKind, &'a str)>,
 // ) -> usize {
 //     match kind {
-//         CONST | ENUM | FN | IMPL | MACRO_CALL | MACRO_DEF | MACRO_RULES | MODULE | RECORD_FIELD
-//         | STATIC | STRUCT | TRAIT | TUPLE_FIELD | TYPE_ALIAS | UNION | USE | VARIANT => {
+//         SCRIPT_DEF | MODULE_DEF => {
 //             let mut res = 0;
 //             let mut trivias = trivias.enumerate().peekable();
 //

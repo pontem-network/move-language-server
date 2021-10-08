@@ -1,5 +1,6 @@
 mod adt;
 
+use crate::grammar::expressions::atom::bump_address;
 use crate::grammar::params::param_list;
 use crate::grammar::types::type_;
 use crate::grammar::{block_expr, name, name_r};
@@ -13,7 +14,7 @@ pub(crate) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
     // T![const],
     // T![let],
     // T![use],
-    // T![module],
+    T![module],
     T![fun],
     // T![public],
     // T![script],
@@ -34,19 +35,31 @@ pub(crate) fn script(p: &mut Parser) {
     m.complete(p, SCRIPT_DEF);
 }
 
+pub(crate) fn address_ident(p: &mut Parser) {
+    let m = p.start();
+    if !bump_address(p) {
+        p.error_and_skip_until("expected valid address", TokenSet::new(&[T![::]]));
+    }
+    m.complete(p, ADDRESS_IDENT);
+}
+
 pub(crate) fn module(p: &mut Parser) {
     let m = p.start();
 
     assert!(p.at(T![module]));
     p.bump(T![module]);
 
+    if p.nth_at(1, T![::]) {
+        address_ident(p);
+        p.bump(T![::]);
+    }
     name(p);
     if p.at(T!['{']) {
         item_list(p);
     } else if !p.eat(T![;]) {
         p.error("expected `;` or `{`");
     }
-    m.complete(p, MODULE);
+    m.complete(p, MODULE_DEF);
 }
 
 pub(crate) fn item_list(p: &mut Parser) {

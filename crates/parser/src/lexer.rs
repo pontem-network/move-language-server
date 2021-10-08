@@ -1,5 +1,6 @@
 use crate::SyntaxKind::{self, *};
 use rowan::TextSize;
+use std::ops::Index;
 
 /// A token of Rust source.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -146,6 +147,14 @@ impl<'t> Lexer<'t> {
     // }
 }
 
+/// Determine if a character is a permitted newline character.
+///
+/// The only permitted newline character is \n. All others are invalid.
+pub fn is_permitted_newline_char(c: char) -> bool {
+    let x = c as u32;
+    x == 0x0A
+}
+
 // Find the next token and its length without changing the state of the lexer.
 pub fn find_token(text: &str) -> (SyntaxKind, usize) {
     let c: char = match text.chars().next() {
@@ -168,6 +177,13 @@ pub fn find_token(text: &str) -> (SyntaxKind, usize) {
                 num_space_chars += 1;
             }
             (WHITESPACE, num_space_chars)
+        }
+        '/' if text.starts_with("//") => {
+            let res = text.char_indices().find(|(pos, ch)| is_permitted_newline_char(ch.clone()));
+            match res {
+                Some((pos, _)) => (COMMENT, pos + 1),
+                None => (COMMENT, text.len()),
+            }
         }
         '0'..='9' => {
             if text.starts_with("0x") && text.len() > 2 {

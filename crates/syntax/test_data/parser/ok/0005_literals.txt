@@ -26,7 +26,7 @@ SOURCE_FILE@0..140
             LITERAL@45..49
               ADDRESS_LIT@45..49
                 ATSIGN@45..46 "@"
-                INTEGER_NUMBER@46..49 "0x1"
+                DIEM_ADDRESS@46..49 "0x1"
             SEMICOLON@49..50 ";"
           WHITESPACE@50..59 "\n        "
           EXPR_STMT@59..68

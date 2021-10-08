@@ -139,7 +139,7 @@ mod inline_tests {
 
     #[test]
     fn parser_test() {
-        let fname = "err/0002_address_lit_recovery.move";
+        let fname = "ok/module_definitions.move";
         let file = test_data_dir().join("parser").join(fname);
         let text = read_to_string(test_data_dir().join("parser").join(fname)).unwrap();
 

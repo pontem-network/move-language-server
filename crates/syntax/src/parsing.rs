@@ -10,6 +10,8 @@ pub(crate) fn parse_text(text: &str) -> (GreenNode, Vec<SyntaxError>) {
     let (events, tokens) = parser::parse_with_lexer(&mut lexer);
 
     let mut tree_sink = TextTreeSink::new(text, &tokens);
+    // dbg!(&tokens);
+    // dbg!(&events);
     event::process(&mut tree_sink, events);
 
     let (tree, mut parser_errors) = tree_sink.finish();
