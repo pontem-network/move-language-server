@@ -24,14 +24,14 @@ SOURCE_FILE@0..140
           WHITESPACE@36..45 "\n        "
           EXPR_STMT@45..50
             LITERAL@45..49
-              DIEM_ADDRESS_LIT@45..49
+              ADDRESS_LIT@45..49
                 ATSIGN@45..46 "@"
                 INTEGER_NUMBER@46..49 "0x1"
             SEMICOLON@49..50 ";"
           WHITESPACE@50..59 "\n        "
           EXPR_STMT@59..68
             LITERAL@59..67
-              NAMED_ADDRESS_LIT@59..67
+              ADDRESS_LIT@59..67
                 ATSIGN@59..60 "@"
                 IDENT@60..67 "StdAddr"
             SEMICOLON@67..68 ";"

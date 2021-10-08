@@ -16,6 +16,9 @@ use crate::grammar::{block_expr_unchecked, paths};
 //     let _ = b"e";
 //     let _ = br"f";
 // }
+pub(crate) const EXPR_STMT_RECOVERY: TokenSet =
+    TokenSet::new(&[T![+], T![-], T![*], T![/], T![;], T![')']]);
+
 pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     T![true],
     T![false],
@@ -27,24 +30,17 @@ pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     ATSIGN,
 ]);
 
-pub(crate) fn address_lit(p: &mut Parser) -> Option<CompletedMarker> {
+pub(crate) fn address_lit(p: &mut Parser) -> CompletedMarker {
     assert!(p.at(T![@]));
     let m = p.start();
     p.bump(T![@]);
-    match p.current() {
-        INTEGER_NUMBER if p.current_text().starts_with("0x") => {
-            p.bump(INTEGER_NUMBER);
-            Some(m.complete(p, DIEM_ADDRESS_LIT))
-        }
-        IDENT => {
-            p.bump(IDENT);
-            Some(m.complete(p, NAMED_ADDRESS_LIT))
-        }
-        _ => {
-            m.abandon(p);
-            None
-        }
+    if p.current() == IDENT || (p.current() == INTEGER_NUMBER && p.current_text().starts_with("0x"))
+    {
+        p.bump_any();
+    } else {
+        p.error_and_skip_until("expected address literal", EXPR_STMT_RECOVERY);
     }
+    m.complete(p, ADDRESS_LIT)
 }
 
 pub(crate) fn literal(p: &mut Parser) -> Option<CompletedMarker> {
