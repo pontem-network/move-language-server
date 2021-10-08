@@ -132,19 +132,26 @@ impl SourceFile {
 #[cfg(test)]
 mod inline_tests {
     use super::*;
+    use crate::tests::test_data_dir;
+    use std::fs::read_to_string;
+    use std::path::Path;
+    use test_utils::project_root;
 
     #[test]
     fn parser_test() {
-        let text = "script { fun main() { 1; } }";
+        let fname = "ok/0005_literals.move";
+        let file = test_data_dir().join("parser").join(fname);
+        let text = read_to_string(test_data_dir().join("parser").join(fname)).unwrap();
 
-        let (green, mut errors) = parsing::parse_text(text);
+        let (green, mut errors) = parsing::parse_text(&text);
         let root = SyntaxNode::new_root(green.clone());
 
-        let source_file = SourceFile { syntax: root };
+        // let source_file = SourceFile { syntax: root };
         // let parse_tree = SourceFile::parse(text);
         // dbg!(&parse_tree);
         // let (green, mut errors) = parsing::parse_text(text);
         // let root = SyntaxNode::new_root(green.clone());
-        // dbg!(&root);
+        dbg!(&errors);
+        dbg!(&root);
     }
 }

@@ -47,7 +47,7 @@ export async function bootstrap(
     // const languageServerPath = await bootstrapLanguageServer(context, state).catch(
     //     handleError.bind(null, 'move-language-server')
     // );
-    const languageServerPath = "/home/mkurnikov/code/move-analyzer/target/debug/move_language_server";
+    const languageServerPath = "/home/mkurnikov/code/move-language-server/target/debug/move_language_server";
 
     const doveExecutablePath = await bootstrapDoveExecutable(context, state).catch(
         handleError.bind(null, 'dove')

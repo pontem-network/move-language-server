@@ -115,6 +115,7 @@ pub enum SyntaxKind {
     WILDCARD_PAT,
     REST_PAT,
     IDENT_PAT,
+    DIEM_ADDRESS,
     #[doc(hidden)]
     __LAST,
 }

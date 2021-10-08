@@ -76,9 +76,9 @@ impl<'t> Lexer<'t> {
         self.token
     }
 
-    // pub fn content(&self) -> &str {
-    //     &self.text[self.cur_start..self.cur_end]
-    // }
+    pub fn current_text(&self) -> &str {
+        &self.text[self.cur_start..self.cur_end]
+    }
 
     // pub fn start_loc(&self) -> usize {
     //     self.cur_start

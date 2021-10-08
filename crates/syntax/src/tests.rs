@@ -21,8 +21,8 @@ fn parser_tests() {
     });
 }
 
-fn test_data_dir() -> PathBuf {
-    project_root().join("syntax/test_data")
+pub fn test_data_dir() -> PathBuf {
+    project_root().join("crates/syntax/test_data")
 }
 
 fn assert_errors_are_present(errors: &[SyntaxError], path: &Path) {

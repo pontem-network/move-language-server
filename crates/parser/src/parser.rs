@@ -50,6 +50,10 @@ impl<'t> Parser<'t> {
         // self.nth(0)
     }
 
+    pub(crate) fn current_text(&self) -> &str {
+        self.lexer.current_text()
+    }
+
     /// Lookahead operation: returns the kind of the next nth
     /// token.
     pub(crate) fn nth(&self, n: usize) -> SyntaxKind {

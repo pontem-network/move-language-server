@@ -1,11 +1,11 @@
 SOURCE_FILE@0..74
-  SCRIPT@0..74
+  SCRIPT_DEF@0..74
     SCRIPT_KW@0..6 "script"
     WHITESPACE@6..7 " "
     ITEM_LIST@7..74
       L_BRACE@7..8 "{"
       WHITESPACE@8..13 "\n    "
-      FUN@13..72
+      FUNCTION_DEF@13..72
         FUN_KW@13..16 "fun"
         WHITESPACE@16..17 " "
         NAME@17..21

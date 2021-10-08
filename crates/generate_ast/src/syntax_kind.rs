@@ -105,6 +105,7 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
         "WILDCARD_PAT",
         "REST_PAT",
         "IDENT_PAT",
+        "DIEM_ADDRESS",
     ],
     tokens: &["ERROR", "IDENT", "WHITESPACE", "COMMENT"],
 };

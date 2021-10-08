@@ -24,14 +24,32 @@ pub(crate) const LITERAL_FIRST: TokenSet = TokenSet::new(&[
     // CHAR,
     HEX_STRING,
     BYTE_STRING,
+    ATSIGN,
 ]);
+
+pub(crate) fn diem_address_lit(p: &mut Parser) -> Option<CompletedMarker> {
+    assert!(p.at(T![@]));
+
+    let m = p.start();
+    p.bump(T![@]);
+    if !(p.current() == INTEGER_NUMBER) || !p.current_text().starts_with("0x") {
+        return None;
+    }
+    p.bump(INTEGER_NUMBER);
+    Some(m.complete(p, DIEM_ADDRESS))
+}
 
 pub(crate) fn literal(p: &mut Parser) -> Option<CompletedMarker> {
     if !p.at_ts(LITERAL_FIRST) {
         return None;
     }
     let m = p.start();
-    p.bump_any();
+    match p.current() {
+        T![@] => {
+            diem_address_lit(p);
+        }
+        _ => p.bump_any(),
+    };
     Some(m.complete(p, LITERAL))
 }
 
