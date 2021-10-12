@@ -7,7 +7,7 @@ mod generic_params;
 mod patterns;
 
 use crate::grammar::expressions::{stmt, StmtWithSemi};
-use crate::grammar::items::{item, module, script};
+use crate::grammar::items::{address, item, module, script};
 use crate::marker::CompletedMarker;
 use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
@@ -67,6 +67,8 @@ pub(crate) fn root(p: &mut Parser) {
             module(p);
         } else if p.at(T![script]) {
             script(p);
+        } else if p.at(T![address]) {
+            address(p);
         } else if p.current().is_trivia() {
             p.bump_any()
         } else {

@@ -56,11 +56,13 @@ pub(crate) const KINDS_SRC: SymbolKindsSrc = SymbolKindsSrc {
     ],
     keywords: &[
         "struct", "script", "module", "const", "use", "as", "let", "mut", "return", "fun", "true",
-        "false", "move", "while", "if", "else", "break", "continue",
+        "false", "move", "while", "if", "else", "break", "continue", "address",
     ],
     literals: &["INTEGER_NUMBER", "BYTE_STRING", "HEX_STRING"],
     nodes: &[
         "SOURCE_FILE",
+        "ADDRESS_DEF",
+        "ADDRESS_ITEM_LIST",
         "MODULE_DEF",
         "ADDRESS_IDENT",
         "SCRIPT_DEF",

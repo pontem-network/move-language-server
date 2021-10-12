@@ -9,6 +9,9 @@ use crate::parser::Parser;
 use crate::SyntaxKind::{self, *};
 use crate::TokenSet;
 
+pub(crate) const TOP_LEVEL_ITEM_RECOVERY_SET: TokenSet =
+    TokenSet::new(&[T![address], T![module], T![script]]);
+
 pub(crate) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
     T![struct],
     // T![const],
@@ -21,12 +24,26 @@ pub(crate) const ITEM_RECOVERY_SET: TokenSet = TokenSet::new(&[
     T![;],
 ]);
 
+pub(crate) fn address(p: &mut Parser) {
+    let m = p.start();
+
+    assert!(p.eat(T![address]));
+    let recovery_set = TOP_LEVEL_ITEM_RECOVERY_SET.union(TokenSet::new(&[T!['{']]));
+    address_ident_r(p, recovery_set);
+
+    if p.at(T!['{']) {
+        address_item_list(p);
+    } else {
+        p.error("expected `{`");
+    }
+
+    m.complete(p, ADDRESS_DEF);
+}
+
 pub(crate) fn script(p: &mut Parser) {
     let m = p.start();
 
-    assert!(p.at(T![script]));
-    p.bump(T![script]);
-
+    assert!(p.eat(T![script]));
     if p.at(T!['{']) {
         item_list(p);
     } else if !p.eat(T![;]) {
@@ -35,10 +52,10 @@ pub(crate) fn script(p: &mut Parser) {
     m.complete(p, SCRIPT_DEF);
 }
 
-pub(crate) fn address_ident(p: &mut Parser) {
+pub(crate) fn address_ident_r(p: &mut Parser, recovery_tokens: TokenSet) {
     let m = p.start();
     if !bump_address(p) {
-        p.error_and_skip_until("expected valid address", TokenSet::new(&[T![::]]));
+        p.error_and_skip_until("expected valid address", recovery_tokens);
     }
     m.complete(p, ADDRESS_IDENT);
 }
@@ -50,7 +67,7 @@ pub(crate) fn module(p: &mut Parser) {
     p.bump(T![module]);
 
     if p.nth_at(1, T![::]) {
-        address_ident(p);
+        address_ident_r(p, TokenSet::new(&[T![::]]));
         p.bump(T![::]);
     }
     name(p);
@@ -60,6 +77,18 @@ pub(crate) fn module(p: &mut Parser) {
         p.error("expected `;` or `{`");
     }
     m.complete(p, MODULE_DEF);
+}
+
+pub(crate) fn address_item_list(p: &mut Parser) {
+    assert!(p.at(T!['{']));
+    let m = p.start();
+    p.bump(T!['{']);
+
+    while !(p.at(T!['}']) || p.at(EOF)) {
+        module(p);
+    }
+    p.expect(T!['}']);
+    m.complete(p, ADDRESS_ITEM_LIST);
 }
 
 pub(crate) fn item_list(p: &mut Parser) {
